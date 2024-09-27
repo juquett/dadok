@@ -1,79 +1,83 @@
-
 <template>
-    <div id="app">
-      <header>
-        <!-- 상단 로그인, 회원가입 -->
-        <div class="top-header">
-          <div class="lefttop">책으로 나를 다독이는 공간</div>
-          <div class="auth">
-            <a href="#">로그인</a>
-            <a href="#" class="signup">회원가입</a>
-            
-          </div>
+  <div id="app">
+    <header>
+      <!-- 상단 로그인, 회원가입 -->
+      <div class="top-header">
+        <div class="lefttop">책으로 나를 다독이는 공간</div>
+        <div class="auth">
+          <a href="#" class="login" @click="goToLogin">로그인</a>
+          <a href="#" class="signup">회원가입</a>
         </div>
-  
-        <!-- 하단 로고와 네비게이션 메뉴 -->
-  <!-- 하단 로고와 네비게이션 메뉴 -->
-        <div class="bottom-header">
-          <div class="logo">
-            <img src="@/assets/logo.png" alt="Logo" />
-            <h1>DADOK</h1>
-          </div>
-          <nav>
-            <ul>
-              <li><a href="#">게시판</a></li>
-              <li><a href="#">이달의책</a></li>
-              <li><a href="#">고객센터</a></li>
-            </ul>
-          </nav>
-          <div class="profile">
-            <a href="#"><img src="@/assets/profileicon.png" alt="Profile" /></a>
-          </div>
+      </div>
+
+      <!-- 하단 로고와 네비게이션 메뉴 -->
+      <div class="bottom-header">
+        <div class="logo">
+          <!-- DADOK 클릭 시 MainPage로 이동 -->
+          <img src="@/assets/logo.png" alt="Logo" />
+          <h1 @click="goToMain" style="cursor: pointer;">DADOK</h1>
         </div>
-  
-      </header>
-  
-      <main>
-        <section class="signup-form">
-          <h2>회원가입</h2>
-          <form @submit.prevent="submitForm">
-            <div class="form-group">
-              <label for="nickname">닉네임 *</label>
-              <input type="text" id="nickname" placeholder="닉네임" v-model="nickname" />
-            </div>
-            <div class="form-group">
-              <label for="id">아이디 *</label>
-              <input type="text" id="id" placeholder="아이디" v-model="id" />
-            </div>
-            <div class="form-group">
-              <label for="password">비밀번호 *</label>
-              <input type="password" id="password" placeholder="비밀번호" v-model="password" />
-            </div>
-            <button type="submit" class="submit-btn">가입하기</button>
-          </form>
-        </section>
-      </main>
-    </div>
-  </template>
-  
-  <script>
-  
-  export default {
-    name: 'JoinPage',
-    data() {
-      return {
-        nickname: '',
-        id: '',
-        password: ''
-      };
+        <nav>
+          <ul>
+            <li><a href="#">게시판</a></li>
+            <li><a href="#">이달의책</a></li>
+            <li><a href="#">고객센터</a></li>
+          </ul>
+        </nav>
+        <div class="profile">
+          <a href="#"><img src="@/assets/profileicon.png" alt="Profile" /></a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="signup-form">
+        <h2>회원가입</h2>
+        <form @submit.prevent="submitForm">
+          <div class="form-group">
+            <label for="nickname">닉네임 *</label>
+            <input type="text" id="nickname" placeholder="닉네임" v-model="nickname" />
+          </div>
+          <div class="form-group">
+            <label for="id">아이디 *</label>
+            <input type="text" id="id" placeholder="아이디" v-model="id" />
+          </div>
+          <div class="form-group">
+            <label for="password">비밀번호 *</label>
+            <input type="password" id="password" placeholder="비밀번호" v-model="password" />
+          </div>
+          <button type="submit" class="submit-btn">가입하기</button>
+        </form>
+      </section>
+    </main>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'JoinPage',
+  data() {
+    return {
+      nickname: '',
+      id: '',
+      password: ''
+    };
+  },
+  methods: {
+    submitForm() {
+      alert('회원가입이 완료되었습니다!');
     },
-    methods: {
-      submitForm() {
-        alert('회원가입이 완료되었습니다!');
-      }
-    }
-  };
-  </script>
+    goToMain() {
+      // MainPage로 라우팅
+      this.$router.push({ name: 'MainPage' });
+    },
+    goToLogin() {    
+      // LoginPage로 라우팅
+    this.$router.push({ name: 'LoginPage' });
+    },
+  }
+};
+</script>
   
   <style scoped>
   
@@ -180,6 +184,7 @@
   }
   
   form {
+    
     display: inline-block;
     text-align: left;
   }
@@ -206,6 +211,7 @@
   
   
   .submit-btn {
+    margin-top: 20px;
     width: 100%;
     padding: 10px;
     background-color: #f4c4b7;
