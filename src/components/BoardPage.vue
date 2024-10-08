@@ -29,67 +29,38 @@
           </div>
         </div>
       </header>
-  
-      <main>
-        <section class="signup-form">
-          <h2>로그인</h2>
-          <form @submit.prevent="submitForm">
-            <div class="form-group">    
-                <input type="text" id="id" placeholder="아이디" v-model="id" />
-            </div>
-            <div class="form-group">
-                <input type="password" id="password" placeholder="비밀번호" v-model="password" />
-            </div>
-            <div class="form-login">
-            <button type="submit" class="submit-btn">로그인</button>
-            </div>
-            <div class="signup-prompt">
-            <span>회원이 아니신가요?</span></div>
-            <div class="form-signup">
-          <button @click="goToJoin" class="signup-btn">회원가입</button>
-            </div>
-        
-          </form>
-        </section>
-      </main>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    name: 'JoinPage',
-    data() {
-      return {
-        nickname: '',
-        id: '',
-        password: ''
-      };
-    },
-    methods: {
+    </template>
+    <script>
+    export default {
 
+      data() {
+        return {
+        };
+      },
+      methods: {
+  
       goToMain() {
-        // MainPage로 라우팅
-        this.$router.push({ name: 'MainPage' });
+          // MainPage로 라우팅
+          this.$router.push({ name: 'MainPage' });
       },
       goToJoin() {
-      // JoinPage로 라우팅
-    this.$router.push({ name: 'JoinPage' });
-    },
-    goToLogin() {    
-      // LoginPage로 라우팅
-    this.$router.push({ name: 'LoginPage' });
-    },
-    goToMonthBook() {    
-      // LoginPage로 라우팅
-    this.$router.push({ name: 'MonthBookPage' });
-    },
-    }
-  };
-  </script>
-    
+        // JoinPage로 라우팅
+      this.$router.push({ name: 'JoinPage' });
+      },
+      goToLogin() {    
+        // LoginPage로 라우팅
+      this.$router.push({ name: 'LoginPage' });
+      },
+      goToMonthBook() {    
+        // LoginPage로 라우팅
+      this.$router.push({ name: 'MonthBookPage' });
+      },
+      }
+    };
+    </script>
+
     <style scoped>
-    
-    
     /* Global Styles */
     body {
       margin: 0;
@@ -180,92 +151,4 @@
       height: 35px;
       border-radius: 50%;
     }
-    /* Main Signup Form Styles */
-    .signup-form {
-      margin-top: 20px;
-      text-align: center;
-      padding: 50px 0;
-    }
-    
-    .signup-form h2 {
-      font-size: 24px;
-      margin-bottom: 30px;
-    }
-    
-    form {
-      display: inline-block;
-      text-align: left;
-    }
-    
-    .form-group {
-      margin-bottom: 10px;
-    }
-    
-    .form-group label {
-      display: block;
-      font-size: 14px;
-      margin-bottom: 5px;
-    }
-    
-    .form-group input {
-      width: 300px;
-      padding: 10px;
-      border: 1px solid #eaeaea;
-      border-radius: 5px;
-    }
-    .form-group input::placeholder {
-      color: #cacaca; 
-    }
-    
-    
-    .submit-btn {
-      width: 100%;
-      padding: 10px;
-      background-color: #f4c4b7;
-      border: none;
-      border-radius: 5px;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 10px;
-      margin-bottom: 60px;
-    }
-    
-    .submit-btn:hover {
-      background-color: #e3a999;
-    }
-
-    .signup-prompt {
-  margin-top: 20px;
-  text-align: center;
-  font-size: 12px;
-  color: #a1a1a1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-.signup-prompt::before, 
-.signup-prompt::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background-color: #eaeaea;
-  margin: 0 10px;
-}
-.signup-btn {
-    width: 100%;
-      padding: 10px;
-      background-color: #C0C0C0;
-      border: none;
-      border-radius: 5px;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-.signup-btn:hover {
-  background-color: #9e9e9e;
-}
-    </style>
-    
+</style>

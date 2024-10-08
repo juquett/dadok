@@ -1,109 +1,132 @@
 <template>
-    <div id="app">
-      <header>
-        <!-- 상단 로그인, 회원가입 -->
-        <div class="top-header">
-          <div class="lefttop">책으로 나를 다독이는 공간</div>
-          <div class="auth">
-            <a href="#" class="login" @click="goToLogin">로그인</a>
-            <a href="#" class="signup" @click="goToJoin">회원가입</a>
-          </div>
+  <div id="app">
+    <header>
+      <!-- 상단 로그인, 회원가입 -->
+      <div class="top-header">
+        <div class="lefttop">책으로 나를 다독이는 공간</div>
+        <div class="auth">
+          <a href="#" class="login" @click="goToLogin">로그인</a>
+          <a href="#" class="signup" @click="goToJoin">회원가입</a>
         </div>
-  
-        <!-- 하단 로고와 네비게이션 메뉴 -->
-        <div class="bottom-header">
-          <div class="logo">
-<!-- DADOK 클릭 시 MainPage로 이동 -->
+      </div>
+
+      <!-- 하단 로고와 네비게이션 메뉴 -->
+      <div class="bottom-header">
+        <div class="logo">
+          <!-- DADOK 클릭 시 MainPage로 이동 -->
           <img src="@/assets/logo.png" alt="Logo" />
           <h1 @click="goToMain" style="cursor: pointer;">DADOK</h1>
-          </div>
-          <nav>
-            <ul>
-              <li><a href="#">게시판</a></li>
-              <li><a href="#">이달의책</a></li>
-              <li><a href="#">고객센터</a></li>
-            </ul>
-          </nav>
-          <div class="profile">
-            <a href="#"><img src="@/assets/profileicon.png" alt="Profile" /></a>
+        </div>
+        <nav>
+          <ul>
+            <li><a href="#" class="Board" @click="goToBoard">게시판</a></li>
+            <li><a href="#" class="monthbook" @click="goToMonthBook">이달의책</a></li>
+            <li><a href="#">고객센터</a></li>
+          </ul>
+        </nav>
+        <div class="profile">
+          <a href="#"><img src="@/assets/profileicon.png" alt="Profile" /></a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- 이미지 슬라이더 -->
+      <div class="slider-container">
+        <div class="slider-header">BEST 9</div> <!-- 왼쪽 상단에 텍스트 추가 -->
+        <button @click="prevSlide" class="arrow left">‹</button>
+
+        <div class="slider">
+          <div
+            class="slider-item"
+            v-for="(image, index) in images"
+            :key="index"
+            :style="{ transform: `translateX(-${currentIndex * 100 / 3}%)` }"
+            v-show="Math.floor(index / 3) === currentGroup"
+          >
+            <img :src="image" alt="slider image" />
           </div>
         </div>
-      </header>
+
+        <button @click="nextSlide" class="arrow right">›</button>
+      </div>
+      <div id="app">
+        <h1 class="center-text">도서 추천</h1>
+        --text--
+      </div>
+    </main>
+  </div>
+</template>
   
-      <main>
-        <!-- 이미지 슬라이더 -->
-        <div class="slider-container">
-          <div class="slider-header">소설 추천</div> <!-- 왼쪽 상단에 텍스트 추가 -->
-          <button @click="prevSlide" class="arrow left">‹</button>
   
-          <div class="slider">
-            <div
-              class="slider-item"
-              v-for="(image, index) in images"
-              :key="index"
-              :style="{ transform: `translateX(-${currentIndex * 100 / 3}%)` }"
-              v-show="Math.floor(index / 3) === currentGroup"
-            >
-              <img :src="image" alt="slider image" />
-            </div>
-          </div>
-  
-          <button @click="nextSlide" class="arrow right">›</button>
-        </div>
-        <div id="app">
-          <h1 class="center-text">도서 추천</h1>
-          --text--
-        </div>
-      </main>
-      
-    </div>
-  </template>
-  
-  <script>
-  export default {
-    data() {
-      return {
-        currentIndex: 0, 
-        currentGroup: 0, // 현재 보여줄 이미지 그룹
-        images: [
-          require('@/assets/book1.jpg'), // 첫 번째 이미지
-          require('@/assets/book1.jpg'), // 두 번째 이미지
-          require('@/assets/logo.png'), // 세 번째 이미지
-          require('@/assets/book1.jpg'), // 네 번째 이미지
-          require('@/assets/logo.png'), // 다섯 번째 이미지
-          require('@/assets/book1.jpg'), // 여섯 번째 이미지
-          require('@/assets/logo.png'), // 일곱 번째 이미지
-          require('@/assets/book1.jpg'), // 여덟 번째 이미지
-          require('@/assets/book1.jpg'), // 아홉 번째 이미지
-        ],
-      };
+<script>
+export default {
+  data() {
+    return {
+      currentIndex: 0,
+      currentGroup: 0, // 현재 보여줄 이미지 그룹
+      images: [
+        require('@/assets/book1.jpg'), // 첫 번째 이미지
+        require('@/assets/book2.jpg'), // 두 번째 이미지
+        require('@/assets/book3.jpg'), // 세 번째 이미지
+        require('@/assets/book4.jpg'), // 네 번째 이미지
+        require('@/assets/book5.jpg'), // 다섯 번째 이미지
+        require('@/assets/book6.jpg'), // 여섯 번째 이미지
+        require('@/assets/book7.jpg'), // 일곱 번째 이미지
+        require('@/assets/book8.jpg'), // 여덟 번째 이미지
+        require('@/assets/book9.jpg'), // 아홉 번째 이미지
+      ],
+    };
+  },
+  mounted() {
+    this.startAutoSlide();
+  },
+  beforeUnmount() {
+    clearInterval(this.autoSlideInterval);
+  },
+  methods: {
+    nextSlide() {
+      if (this.currentGroup < Math.ceil(this.images.length / 3) - 1) {
+        this.currentGroup++;
+      } else {
+        this.currentGroup = 0; // 마지막 슬라이드에서 다시 처음으로
+      }
     },
-    methods: {
-      nextSlide() {
-        if (this.currentGroup < Math.ceil(this.images.length / 3) - 1) {
-          this.currentGroup++;
-        }
-      },
-      prevSlide() {
-        if (this.currentGroup > 0) {
-          this.currentGroup--;
-        }
-      },
-      goToJoin() {
+    prevSlide() {
+      if (this.currentGroup > 0) {
+        this.currentGroup--;
+      } else {
+        this.currentGroup = Math.ceil(this.images.length / 3) - 1; // 첫 슬라이드에서 마지막으로
+      }
+    },
+    startAutoSlide() {
+      this.autoSlideInterval = setInterval(() => {
+        this.nextSlide();
+      }, 5000); // 3초마다 자동으로 다음 슬라이드로 이동
+    },
+    goToJoin() {
       // JoinPage로 라우팅
-    this.$router.push({ name: 'JoinPage' });
+      this.$router.push({ name: "JoinPage" });
     },
-      goToMain() {    
+    goToMain() {
       // MainPage로 라우팅
-    this.$router.push({ name: 'MainPage' });
+      this.$router.push({ name: "MainPage" });
     },
-    goToLogin() {    
+    goToLogin() {
       // LoginPage로 라우팅
-    this.$router.push({ name: 'LoginPage' });
+      this.$router.push({ name: "LoginPage" });
+    },
+    goToBoard() {
+      // BoardPage로 라우팅
+      this.$router.push({ name: "BoardPage" });
+    },
+    goToMonthBook() {
+      // MonthBookPage로 라우팅
+      this.$router.push({ name: "MonthBookPage" });
     },
   },
-  };
-  </script>
+};
+</script>
   
   <style scoped>
   /* Global Styles */
@@ -216,9 +239,9 @@
   
   .slider-header {
     position: absolute;
-    top: 25px;
+    top: 15px;
     left: 40px;
-    font-size: 30px;
+    font-size: 20px;
     color: white;
     font-weight: bold;
   }

@@ -20,7 +20,7 @@
         <nav>
           <ul>
             <li><a href="#">게시판</a></li>
-            <li><a href="#">이달의책</a></li>
+            <li><a href="#" class="monthbook" @click="goToMonthBook">이달의책</a></li>
             <li><a href="#">고객센터</a></li>
           </ul>
         </nav>
@@ -74,6 +74,10 @@ export default {
     goToLogin() {    
       // LoginPage로 라우팅
     this.$router.push({ name: 'LoginPage' });
+    },
+    goToMonthBook() {    
+      // LoginPage로 라우팅
+    this.$router.push({ name: 'MonthBookPage' });
     },
   }
 };
