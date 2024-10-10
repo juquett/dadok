@@ -25,7 +25,7 @@
           </ul>
         </nav>
         <div class="profile">
-          <a href="#"><img src="@/assets/profileicon.png" alt="Profile" /></a>
+          <a href="#"><img @click="goToMyPage" src="@/assets/profileicon.png" alt="Profile" /></a>
         </div>
       </div>
     </header>
@@ -78,6 +78,10 @@ export default {
     goToMonthBook() {    
       // LoginPage로 라우팅
     this.$router.push({ name: 'MonthBookPage' });
+    },
+    goToMyPage() {
+      // myPage로 라우팅
+      this.$router.push({ name: "myPage" });
     },
   }
 };

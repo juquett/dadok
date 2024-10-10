@@ -6,6 +6,8 @@ import BoardPage from '@/components/BoardPage.vue';// 로그인 페이지 컴포
 import MonthBookpage from '@/components/MonthBookPage.vue'; //이달의책 페이지 컴포넌트
 import MonthSeptember from '@/components/MonthBook/MonthSeptember.vue'; //이달의책 9월 컴포넌트
 import MonthAugust from '@/components/MonthBook/MonthAugust.vue'; //이달의책 8월 컴포넌트
+import myPage from '@/components/myPage.vue'; //마이페이지 컴포넌트
+
 const routes = [
   {
     path: '/',
@@ -41,7 +43,12 @@ const routes = [
   path: '/MonthAugust',
   name: 'MonthAugust',
   component: MonthAugust, // 이달의책 8월 페이지
-},
+  },
+  {
+    path: '/myPage',
+    name: 'myPage',
+    component: myPage, // 마이페이지
+  },
 
 ];
 
