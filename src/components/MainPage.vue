@@ -66,7 +66,7 @@ export default {
       currentIndex: 0,
       currentGroup: 0, // 현재 보여줄 이미지 그룹
       images: [
-        require('@/assets/book1.jpg'), // 첫 번째 이미지
+        require('@/assets/book1.jpg'), // 첫 번째 이미지 // 모든 이미지 크기 조정해야함
         require('@/assets/book2.jpg'), // 두 번째 이미지
         require('@/assets/book3.jpg'), // 세 번째 이미지
         require('@/assets/book4.jpg'), // 네 번째 이미지
