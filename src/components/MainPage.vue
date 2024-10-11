@@ -25,61 +25,87 @@
           </ul>
         </nav>
         <div class="profile">
-          <a href="#"><img src="@/assets/profileicon.png" alt="Profile" /></a>
+          <a href="#"><img @click="goToMyPage" src="@/assets/profileicon.png" alt="Profile" /></a>
         </div>
       </div>
     </header>
 
     <main>
-      <!-- 이미지 슬라이더 -->
-      <div class="slider-container">
-        <div class="slider-header">BEST 9</div> <!-- 왼쪽 상단에 텍스트 추가 -->
-        <button @click="prevSlide" class="arrow left">‹</button>
+    <!-- 이미지 슬라이더 -->
+    <div class="slider-container">
+      <div class="slider-header"></div>
+      <Carousel :itemsToShow="3" autoplay :autoplayTimeout="5000">
+        <Slide v-for="(image, index) in images" :key="index">
+          <img :src="image" alt="slider image" class="slider-image" />
+        </Slide>
+      </Carousel>
+    </div>
 
-        <div class="slider">
-          <div
-            class="slider-item"
-            v-for="(image, index) in images"
-            :key="index"
-            :style="{ transform: `translateX(-${currentIndex * 100 / 3}%)` }"
-            v-show="Math.floor(index / 3) === currentGroup"
-          >
-            <img :src="image" alt="slider image" />
-          </div>
-        </div>
+    <div id="app">
+      <h1 class="center-text">도서 추천</h1>
+      <h2 class="center-text2">이런 책은 어떠신가요?</h2>
+      <div ref="animateElement" class="scroll-animation">
+  <div class="book-item book1">
+    <img src="@/assets/book5.jpg" alt="book image" />
+    <div class="book-info">완전한 행복<br>정유정</div>
+  </div>
+  <div class="book-item book2">
+    <img src="@/assets/book7.jpg" alt="book image" />
+    <div class="book-info">채식 주의자<br>한강</div>
+  </div>
+  <div class="book-item book3">
+    <img src="@/assets/book4.jpg" alt="book image" />
+    <div class="book-info">이중 하나는 거짓말<br>김애란</div>
+  </div>
+  <div class="book-item book4">
+    <img src="@/assets/book3.jpg" alt="book image" />
+    <div class="book-info">영원한 천국<br>정유정</div>
+  </div>
+</div>
 
-        <button @click="nextSlide" class="arrow right">›</button>
-      </div>
-      <div id="app">
-        <h1 class="center-text">도서 추천</h1>
-        --text--
-      </div>
-    </main>
+    </div>
+  </main>
   </div>
 </template>
   
   
 <script>
+import { Carousel, Slide } from 'vue3-carousel';
+import 'vue3-carousel/dist/carousel.css';
+
 export default {
+  components: {
+    Carousel,
+    Slide,
+  },
+  
   data() {
     return {
       currentIndex: 0,
       currentGroup: 0, // 현재 보여줄 이미지 그룹
       images: [
-        require('@/assets/book1.jpg'), // 첫 번째 이미지 // 모든 이미지 크기 조정해야함
+        require('@/assets/book5month.jpg'), // 첫 번째 이미지 // 모든 이미지 크기 조정해야함
         require('@/assets/book2.jpg'), // 두 번째 이미지
-        require('@/assets/book3.jpg'), // 세 번째 이미지
-        require('@/assets/book4.jpg'), // 네 번째 이미지
-        require('@/assets/book5.jpg'), // 다섯 번째 이미지
-        require('@/assets/book6.jpg'), // 여섯 번째 이미지
-        require('@/assets/book7.jpg'), // 일곱 번째 이미지
+        require('@/assets/book4month.jpg'), // 세 번째 이미지
+        require('@/assets/book7month.jpg'), // 네 번째 이미지
+        require('@/assets/book1.jpg'), // 다섯 번째 이미지
+        require('@/assets/book1month.jpg'), // 여섯 번째 이미지
+        require('@/assets/book3month.jpg'), // 일곱 번째 이미지
         require('@/assets/book8.jpg'), // 여덟 번째 이미지
-        require('@/assets/book9.jpg'), // 아홉 번째 이미지
+        require('@/assets/book2month.jpg'), // 아홉 번째 이미지
+        require('@/assets/book10.jpg'), // 열 번째 이미지
       ],
     };
   },
   mounted() {
-    this.startAutoSlide();
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    });
+    observer.observe(this.$refs.animateElement);
   },
   beforeUnmount() {
     clearInterval(this.autoSlideInterval);
@@ -123,6 +149,10 @@ export default {
     goToMonthBook() {
       // MonthBookPage로 라우팅
       this.$router.push({ name: "MonthBookPage" });
+    },
+    goToMyPage() {
+      // myPage로 라우팅
+      this.$router.push({ name: "myPage" });
     },
   },
 };
@@ -222,6 +252,13 @@ export default {
   }
   
   /* main style - 이미지 슬라이더 스타일링 */
+  .slider-image {
+  width: 55%;
+  height: 90%;
+  object-fit: cover;
+  border-radius: 20px;
+  box-shadow: 0px 6px 9px rgba(0, 0, 0, 0.2); /* 그림자 추가 */
+}
   .slider-container {
     position: relative;
     width: 1200px;
@@ -239,61 +276,122 @@ export default {
   
   .slider-header {
     position: absolute;
-    top: 15px;
-    left: 40px;
-    font-size: 20px;
+    top: 10px;
+    left: 15px;
+    font-size: 25px;
     color: white;
     font-weight: bold;
   }
-  
-  .slider {
-    display: flex;
-    transition: transform 20ms ease;
-    align-items: center; /* 슬라이더 아이템 안의 콘텐츠 세로 중앙 정렬 */
-  }
-  
-  .slider-item {
-    display: flex;
-    justify-content: center; /* 가로 중앙 정렬 */
-    align-items: center; /* 세로 중앙 정렬 */
-    min-width: 30%;
-    height: 100%; /* 부모 컨테이너 높이에 맞추기 */
-    margin: 0;
-    padding: 0;
-    border-radius: 15px; /* 박스 모서리 둥글게 */
-  }
-  
-  .slider-item img {
-    max-width: 55%; /* 이미지가 부모 요소의 가로 크기를 넘지 않게 */
-    max-height: 50%; /* 이미지가 부모 요소의 세로 크기를 넘지 않게 */
-    object-fit: contain; /* 이미지 비율 유지하면서 부모 박스에 맞춤 */
-    display: block; /* 블록 요소로 변경 */
-  }
-  
-  /* 화살표 스타일 */
-  .arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: #FCC8BB;
-    color: white;
-    border: none;
-    font-size: 2rem;
-    cursor: pointer;
-    padding: 0.5rem 1rem;
-    z-index: 10;
-  }
-  
-  .left {
-    left: 10px;
-  }
-  
-  .right {
-    right: 10px;
-  }
-  
   .center-text {
+    margin-top: 100px;
     text-align: center;
+    font-weight: bold;
   }
+  .center-text2 {
+    margin-top: 20px;
+    text-align: center;
+    color: #a1a1a1;
+    font-size: 20px;
+  }
+  
+  .scroll-animation {
+  margin-left: 100px;
+  margin-top: 100px;
+  margin-bottom: 200px;
+  display: flex; /* 가로로 나열 */
+
+  justify-content: flex-start; /* 왼쪽 정렬 */
+}
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.scroll-animation.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* 기본 스타일 */
+.book-item {
+  position: relative; /* 자식 요소의 절대 위치 설정을 위해 필요 */
+  width: 200px;
+  height: 300px;
+  border-radius: 10px;
+  box-shadow: 0px 6px 9px rgba(0, 0, 0, 0.2);
+  margin-right: 100px;
+  margin-left: 20px;
+  overflow: hidden; /* 자식 요소가 부모 영역을 넘지 않도록 */
+}
+.book-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 이미지 비율 유지 */
+  transition: filter 0.5s ease; /* 부드러운 효과를 위한 transition */
+}
+
+/* 첫 번째 책 스타일 */
+.book1 {
+  width: 200px; 
+  height: 300px;
+  transform: rotate(-0deg); /* 살짝 회전 */
+  animation: fadeInUp 1s ease-in-out 0.5s forwards;
+}
+
+/* 두 번째 책 스타일 */
+.book2 {
+  width: 200px; 
+  height: 300px;
+  transform: rotate(-0deg); /* 살짝 회전 */
+  animation: fadeInUp 1.5s ease-in-out 0.5s forwards;
+}
+
+/* 세 번째 책 스타일 */
+.book3 {
+  width: 200px;
+  height: 300px;
+  transform: rotate(+0deg); /* 살짝 회전 */
+  animation: fadeInUp 2s ease-in-out 0.5s forwards;
+}
+
+/* 네 번째 책 스타일 */
+.book4 {
+  width: 200px;
+  height: 300px;
+  filter: grayscale(50%); /* 흑백 효과 */
+  transform: rotate(+0deg); /* 살짝 회전 */
+  animation: fadeInUp 2.5s ease-in-out 0.5s forwards;
+}
+.book-info {
+  position: absolute;
+  bottom: 0; /* 아래쪽에 위치 */
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.7); /* 반투명 배경 */
+  color: white;
+  text-align: center;
+  padding: 10px;
+  opacity: 0; /* 기본적으로 보이지 않음 */
+  transform: translateY(20px); /* 아래에서 올라오는 효과 */
+  transition: opacity 0.5s ease, transform 0.5s ease; /* 부드러운 효과 */
+}
+/* hover 시 효과 */
+.book-item:hover img {
+  filter: grayscale(100%); /* 흑백 효과 */
+}
+
+.book-item:hover .book-info {
+  opacity: 1; /* 정보 보이기 */
+  transform: translateY(0); /* 원래 위치로 */
+}
+
+
+  
+
   </style>
   

@@ -1,3 +1,5 @@
+<!--10월이 기본-->
+
 <template>
     <div id="app">
       <header>
@@ -46,27 +48,27 @@
                 <option value="2024-01">2024년 1월</option>
             </select>
           </div>
-          8월의 책
+          2월의 책
         </div>
+  
+        <!-- 이미지와 텍스트가 배치될 영역 -->
         <div class="book-section">
-        <img src="@/assets/book10.jpg" alt="Book Cover" class="book-image" />
-        <div class="book-info">
-          <h2>
-            이기적 유전자
-            <span class="author-name">리처드 도킨스</span>
-          </h2>
-          <p>#과학 #생물학</p>
-          <div class="gray-box">
-            저자는 이 책에서 인간을 포함한 모든 생명체는 DNA 또는 유전자에 의해 창조된 생존 기계이며, 
-            자기의 유전자를 후세에 남기려는 이기적인 행동을 수행하는 존재라고 주장한다. 
-            이러한 주장은 생물학계를 비롯해 과학계를 떠들썩하게 만들었고, 
-            40년 동안 학계와 언론의 수많은 찬사와 논쟁의 대상이 되었다. 
-            저자는 자신의 주장을 뒷받침하기 위해서 성의 진화, 이타주의의 본질, 협동의 진화, 적응의 범위, 
-            무리의 발생, 가족계획, 혈연선택 등의 주요 쟁점과 게임 이론, 진화적으로 안정한 전략의 실험, 
-            죄수의 딜레마, 박쥐 실험, 꿀벌 실험 등 방대한 현대 연구 이론과 실험을 보여 준다. 
+          <img src="@/assets/book2month.jpg" alt="Book Cover" class="book-image" />
+          <div class="book-info">
+            <h2>
+              꽃을 보듯 너를 본다
+              <span class="author-name">나태주</span>
+            </h2>
+            <p>#시 #에세이</p>
+            <div class="gray-box">
+                블랙핑크(BLACKPINK)의 지수와 세계적인 보컬 그룹인 방탄소년단(BTS)의 RM, 송혜교와 박보검 등은
+                물론 전국민의 애송시인 [풀꽃]이 수록되어있는 나태주 시집 [꽃을 보듯 너를 본다].
+                “자세히 보아야/ 예쁘다//오래 보아야/사랑스럽다//너도 그렇다.” 나태주 시인의 [풀꽃]은 전국민의 애송시라고 해도 과언이 아니다. 
+                순수하고 꾸밈없는 시어들은 풀꽃의 시처럼 독자들에게 꾸준히 읽히면 더 큰 사랑을 받게 됐다. 
+                평범한 것에 아름다움을 보는 눈, 별 볼일 없다고 생각했던 무언가를 다시보게 하는 힘이 이 시집에 있다.
+            </div>
           </div>
         </div>
-      </div>
       </main>
     </div>
   </template>
@@ -75,7 +77,7 @@
   export default {
     data() {
       return {
-        selectedDate: "2024-08"
+        selectedDate: "2024-02"
       };
     },
     methods: {
@@ -116,17 +118,17 @@
         this.$router.push({ name: "LoginPage" });
       },
       goToBoard() {
-      // BoardPage로 라우팅
-      this.$router.push({ name: "BoardPage" });
-    },
+        // BoardPage로 라우팅
+        this.$router.push({ name: "BoardPage" });
+      },
       goToMonthBook() {
         // MonthBookPage로 라우팅
         this.$router.push({ name: "MonthBookPage" });
       },
       goToMyPage() {
-      // myPage로 라우팅
-      this.$router.push({ name: "myPage" });
-    },
+        // myPage로 라우팅
+        this.$router.push({ name: "myPage" });
+      },
     }
   };
   </script>
@@ -226,6 +228,7 @@
   
   /* Main Styles */
   .pink-box {
+    margin-top: 00px;
     position: relative;
     width: 100%;
     height: 350px;
@@ -249,48 +252,50 @@
     padding: 10px;
     border-radius: 10px;
   }
+  
+  /* 이미지와 텍스트를 위한 스타일 */
   .book-section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 150px;
-  background-color: white;
-}
-
-.book-image {
-  width: 200px;
-  height: 100%;
-  margin-right: 60px;
-  box-shadow: 0px 8px 9px rgba(0, 0, 0, 0.2); /* 그림자 추가 */
-  border-radius: 20px;
-}
-
-.book-info {
-  max-width: 600px;
-}
-
-.book-info h2 {
-  font-size: 48px;
-  margin-top: 0px;
-  margin-bottom: 10px;
-}
-.author-name {
-  font-size: 20px;
-  margin-left: 10px;
-  color: #555;
-}
-
-.book-info p {
-  margin-bottom: 5px;
-  color: #555;
-}
-.gray-box {
-  background-color: #f0f0f0;
-  padding: 30px;
-  border-radius: 20px;
-  color: #555;
-  margin-top: 50px;
-  font-size: 14px;
-}
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 150px;
+    background-color: white;
+  }
+  
+  .book-image {
+    width: 200px;
+    height: 100%;
+    margin-right: 60px;
+    box-shadow: 0px 8px 9px rgba(0, 0, 0, 0.2); /* 그림자 추가 */
+    border-radius: 20px;
+  }
+  
+  .book-info {
+    max-width: 600px;
+  }
+  
+  .book-info h2 {
+    font-size: 48px;
+    margin-top: 0px;
+    margin-bottom: 10px;
+  }
+  .author-name {
+    font-size: 20px;
+    margin-left: 10px;
+    color: #555;
+  }
+  
+  .book-info p {
+    margin-bottom: 5px;
+    color: #555;
+  }
+  .gray-box {
+    background-color: #f0f0f0;
+    padding: 30px;
+    border-radius: 20px;
+    color: #555;
+    margin-top: 50px;
+    font-size: 14px;
+  }
   </style>
   

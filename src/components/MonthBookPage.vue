@@ -1,3 +1,5 @@
+<!--10월이 기본-->
+
 <template>
   <div id="app">
     <header>
@@ -19,13 +21,13 @@
         </div>
         <nav>
           <ul>
-            <li><a href="#">게시판</a></li>
+            <li><a href="#" class="Board" @click="goToBoard">게시판</a></li>
             <li><a href="#" class="monthbook" @click="goToMonthBook">이달의책</a></li>
             <li><a href="#">고객센터</a></li>
           </ul>
         </nav>
         <div class="profile">
-          <a href="#"><img src="@/assets/profileicon.png" alt="Profile" /></a>
+          <a href="#"><img @click="goToMyPage" src="@/assets/profileicon.png" alt="Profile" /></a>
         </div>
       </div>
     </header>
@@ -35,8 +37,15 @@
         <div class="date-select">
           <select v-model="selectedDate" @change="changePage">
             <option value="2024-10">2024년 10월</option>
-            <option value="2024-09">2024년 9월</option>
-            <option value="2024-08">2024년 8월</option>
+              <option value="2024-09">2024년 9월</option>
+              <option value="2024-08">2024년 8월</option>
+              <option value="2024-07">2024년 7월</option>
+              <option value="2024-06">2024년 6월</option>
+              <option value="2024-05">2024년 5월</option>
+              <option value="2024-04">2024년 4월</option>
+              <option value="2024-03">2024년 3월</option>
+              <option value="2024-02">2024년 2월</option>
+              <option value="2024-01">2024년 1월</option>
           </select>
         </div>
         10월의 책
@@ -75,12 +84,26 @@ export default {
     changePage() {
       // 선택된 날짜에 따라 페이지를 변경
       if (this.selectedDate === "2024-09") {
-        this.$router.push({ name: "MonthSeptember" }); // Vue Router로 라우팅
-      } else if (this.selectedDate === "2024-10") {
-        this.$router.push({ name: "MonthBookPage" }); // Vue Router로 라우팅
-      } else if (this.selectedDate === "2024-08") {
-        this.$router.push({ name: "MonthAugust" });
-      }
+          this.$router.push({ name: "MonthSeptember" }); // Vue Router로 라우팅
+        } else if (this.selectedDate === "2024-10") {
+          this.$router.push({ name: "MonthBookPage" }); // Vue Router로 라우팅
+        } else if (this.selectedDate === "2024-08") {
+          this.$router.push({ name: "MonthAugust" })
+        } else if (this.selectedDate === "2024-07") {
+          this.$router.push({ name: "MonthJuly" });
+        } else if (this.selectedDate === "2024-06") {
+          this.$router.push({ name: "MonthJune" });
+        } else if (this.selectedDate === "2024-05") {
+          this.$router.push({ name: "MonthMay" });
+        } else if (this.selectedDate === "2024-04") {
+          this.$router.push({ name: "MonthApril" });
+        } else if (this.selectedDate === "2024-03") {
+          this.$router.push({ name: "MonthMarch" });
+        } else if (this.selectedDate === "2024-02") {
+          this.$router.push({ name: "MonthFebruary" });
+        } else if (this.selectedDate === "2024-01") {
+          this.$router.push({ name: "MonthJanuary" });
+        }
     },
     goToMain() {
       // MainPage로 라우팅
@@ -94,10 +117,18 @@ export default {
       // LoginPage로 라우팅
       this.$router.push({ name: "LoginPage" });
     },
+    goToBoard() {
+      // BoardPage로 라우팅
+      this.$router.push({ name: "BoardPage" });
+    },
     goToMonthBook() {
       // MonthBookPage로 라우팅
       this.$router.push({ name: "MonthBookPage" });
-    }
+    },
+    goToMyPage() {
+      // myPage로 라우팅
+      this.$router.push({ name: "myPage" });
+    },
   }
 };
 </script>
@@ -197,9 +228,10 @@ nav ul li a {
 
 /* Main Styles */
 .pink-box {
+  margin-top: 00px;
   position: relative;
   width: 100%;
-  height: 400px;
+  height: 350px;
   background-color: #f4c4b7;
   display: flex;
   justify-content: center;

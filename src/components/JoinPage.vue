@@ -25,32 +25,37 @@
           </ul>
         </nav>
         <div class="profile">
-          <a href="#"><img src="@/assets/profileicon.png" alt="Profile" /></a>
+          <a href="#"><img @click="goToMyPage" src="@/assets/profileicon.png" alt="Profile" /></a>
         </div>
       </div>
     </header>
 
     <main>
       <section class="signup-form">
-        <h2>회원가입</h2>
-        <form @submit.prevent="submitForm">
-          <div class="form-group">
-            <label for="username">닉네임 *</label>
-            <input type="text" id="username" placeholder="닉네임" v-model="username" />
-          </div>
-          <div class="form-group">
-            <label for="userid">아이디 *</label>
-            <input type="text" userid="userid" placeholder="아이디" v-model="userid" />
-          </div>
-          <div class="form-group">
-            <label for="password">비밀번호 *</label>
-            <input type="password" userid="password" placeholder="비밀번호" v-model="password" />
-          </div>
-          <button type="submit" class="submit-btn">가입하기</button>
-        </form>
-        <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
-        <p v-if="successMessage" class="success">{{ successMessage }}</p>
-      </section>
+  <h2>회원가입</h2>
+  <form @submit.prevent="submitForm">
+    <div class="form-group">
+      <label for="username">닉네임 *</label>
+      <input type="text" id="username" placeholder="닉네임" v-model="username" />
+    </div>
+    <div class="form-group">
+      <label for="userid">아이디 *</label>
+      <input type="text" id="userid" placeholder="아이디" v-model="userid" />
+    </div>
+    <div class="form-group">
+      <label for="password">비밀번호 *</label>
+      <input type="password" id="password" placeholder="비밀번호" v-model="password" />
+    </div>
+    <div class="form-group">
+      <label for="confirmPassword">비밀번호 확인 *</label>
+      <input type="password" id="confirmPassword" placeholder="비밀번호 확인" v-model="confirmPassword" />
+    </div>
+    <button type="submit" class="submit-btn">가입하기</button>
+  </form>
+  <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+  <p v-if="successMessage" class="success">{{ successMessage }}</p>
+</section>
+
     </main>
   </div>
 </template>
@@ -65,73 +70,93 @@ export default {
       username: '',
       userid: '',
       password: '',
+      confirmPassword: '',
       errorMessage: '',
       successMessage: ''
+      
     };
   },
   methods: {
-    // 유효성 검사
-    validateForm() {
-      if (!this.username || !this.userid || !this.password) {
-        this.errorMessage = "모든 필드를 채워주세요.";
-        return false;
-      }
-      return true;
-    },
+  // 비밀번호 일치 확인
+  validatePassword() {
+    if (this.password !== this.confirmPassword) {
+      this.errorMessage = "비밀번호가 일치하지 않습니다.";
+      return false;
+    }
+    return true;
+  },
 
-    // 회원가입 폼 제출
-    submitForm() {
-      // 데이터 유효성 검사
-      if (!this.validateForm()) {
-        return;
-      }
+  // 유효성 검사에 비밀번호 확인 추가
+  validateForm() {
+    if (!this.username || !this.userid || !this.password || !this.confirmPassword) {
+      this.errorMessage = "모든 필드를 채워주세요.";
+      return false;
+    }
 
-      // 서버로 보낼 데이터 준비
-      const signupData = {
-        username: this.username,
-        userid: this.userid,
-        password: this.password
-      };
+    // 비밀번호 확인
+    if (!this.validatePassword()) {
+      return false;
+    }
 
-      // API 호출
-      axios.post(`http://172.16.111.42:8080/register`, signupData)
-        .then(() => {
-          this.successMessage = "회원가입이 성공적으로 완료되었습니다.";
-          this.errorMessage = '';
-          this.username = '';
-          this.userid = '';
-          this.password = '';
+    return true;
+  },
 
-          // 회원가입 성공 후 MainPage로 이동
-          this.goToMain();
-        })
-        .catch(error => {
-          if (error.response) {
-            console.error('서버 응답 오류:', error.response.data);
-            this.errorMessage = `서버 오류: ${error.response.data.message}`;
-          } else if (error.request) {
-            console.error('응답 없음:', error.request);
-            this.errorMessage = '서버 응답이 없습니다.';
-          } else {
-            console.error('요청 설정 오류:', error.message);
-            this.errorMessage = '요청을 처리하는 중 오류가 발생했습니다.';
-          }
-        });
-    },
+  // 회원가입 폼 제출
+  submitForm() {
+    // 데이터 유효성 검사
+    if (!this.validateForm()) {
+      return;
+    }
 
-    goToMain() {
-      // MainPage로 라우팅
-      this.$router.push({ name: 'MainPage' });
-    },
-    goToLogin() {    
-      // LoginPage로 라우팅
-      this.$router.push({ name: 'LoginPage' });
-    },
-    goToMonthBook() {    
-      // MonthBookPage로 라우팅
-      this.$router.push({ name: 'MonthBookPage' });
-    },
+    const signupData = {
+      username: this.username,
+      userid: this.userid,
+      password: this.password
+    };
+
+    axios.post(`http://192.168.92.1:8080/register`, signupData, { timeout: 5000 })
+      .then(() => {
+        this.successMessage = "회원가입이 성공적으로 완료되었습니다.";
+        this.errorMessage = '';
+        this.username = '';
+        this.userid = '';
+        this.password = '';
+        this.confirmPassword = '';  // 비밀번호 확인 필드 초기화
+
+        // 회원가입 성공 후 MainPage로 이동
+        this.goToMain();
+      })
+      .catch(error => {
+        if (error.code === 'ECONNABORTED') {
+          console.error('요청 시간 초과:', error.message);
+          this.errorMessage = '서버 응답이 너무 오래 걸립니다. 다시 시도해주세요.';
+        } else if (error.response) {
+          console.error('서버 응답 오류:', error.response.data);
+          this.errorMessage = `서버 오류: ${error.response.data.message}`;
+        } else if (error.request) {
+          console.error('응답 없음:', error.request);
+          this.errorMessage = '서버 응답이 없습니다.';
+        } else {
+          console.error('요청 설정 오류:', error.message);
+          this.errorMessage = '요청을 처리하는 중 오류가 발생했습니다.';
+        }
+      });
+  },
+
+  goToMain() {
+    this.$router.push({ name: 'MainPage' });
+  },
+  goToLogin() {
+    this.$router.push({ name: 'LoginPage' });
+  },
+  goToMonthBook() {
+    this.$router.push({ name: 'MonthBookPage' });
+  },
+  goToMyPage() {
+    this.$router.push({ name: "myPage" });
   }
+}
+
 };
 </script>
 

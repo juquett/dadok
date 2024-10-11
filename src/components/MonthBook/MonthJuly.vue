@@ -34,7 +34,7 @@
         <div class="pink-box">
           <div class="date-select">
             <select v-model="selectedDate" @change="changePage">
-              <option value="2024-10">2024년 10월</option>
+                <option value="2024-10">2024년 10월</option>
                 <option value="2024-09">2024년 9월</option>
                 <option value="2024-08">2024년 8월</option>
                 <option value="2024-07">2024년 7월</option>
@@ -46,24 +46,24 @@
                 <option value="2024-01">2024년 1월</option>
             </select>
           </div>
-          8월의 책
+          7월의 책
         </div>
         <div class="book-section">
-        <img src="@/assets/book10.jpg" alt="Book Cover" class="book-image" />
+        <img src="@/assets/book7month.jpg" alt="Book Cover" class="book-image" />
         <div class="book-info">
           <h2>
-            이기적 유전자
-            <span class="author-name">리처드 도킨스</span>
+            토마토 컵라면
+            <span class="author-name">차정은</span>
           </h2>
-          <p>#과학 #생물학</p>
+          <p>#시 #에세이</p>
           <div class="gray-box">
-            저자는 이 책에서 인간을 포함한 모든 생명체는 DNA 또는 유전자에 의해 창조된 생존 기계이며, 
-            자기의 유전자를 후세에 남기려는 이기적인 행동을 수행하는 존재라고 주장한다. 
-            이러한 주장은 생물학계를 비롯해 과학계를 떠들썩하게 만들었고, 
-            40년 동안 학계와 언론의 수많은 찬사와 논쟁의 대상이 되었다. 
-            저자는 자신의 주장을 뒷받침하기 위해서 성의 진화, 이타주의의 본질, 협동의 진화, 적응의 범위, 
-            무리의 발생, 가족계획, 혈연선택 등의 주요 쟁점과 게임 이론, 진화적으로 안정한 전략의 실험, 
-            죄수의 딜레마, 박쥐 실험, 꿀벌 실험 등 방대한 현대 연구 이론과 실험을 보여 준다. 
+            미화되는 계절, 가장 사랑했던 어느 여름날의 추억을 시로써 풀어냈다. 
+            사랑했던 한여름의 태양이 타오르고, 한철 식어버린 여름의 아름다운 부분을 이야기했다.
+             뜨겁게 내려오는 땀줄기가 보이지 않는 듯, 여름과의 깊은 사랑을 가볍게 눌러 담았다.
+            여름은 뜨겁고 습하고 끈적거리는 계절을 한탄하지만, 겨울은 여름의 따뜻한 시선을 시샘한다. 
+            우리는 한탄하고 시샘하는 여름에 무슨 추억을 남겼는지 더위가 다 지고 나서야 알아차린다. 
+            여름의 텁텁하고 서투른 글자들에 한철 식은 추억을 하나둘 눌러 담았다. 
+            나의 사랑 가득한 여름 이야기에는 언제나 쌉쌀한 토마토의 향기가 잔뜩 퍼진다. 
           </div>
         </div>
       </div>
@@ -75,7 +75,7 @@
   export default {
     data() {
       return {
-        selectedDate: "2024-08"
+        selectedDate: "2024-07"
       };
     },
     methods: {

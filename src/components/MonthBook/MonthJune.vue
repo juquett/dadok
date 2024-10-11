@@ -35,35 +35,34 @@
           <div class="date-select">
             <select v-model="selectedDate" @change="changePage">
               <option value="2024-10">2024년 10월</option>
-                <option value="2024-09">2024년 9월</option>
-                <option value="2024-08">2024년 8월</option>
-                <option value="2024-07">2024년 7월</option>
-                <option value="2024-06">2024년 6월</option>
-                <option value="2024-05">2024년 5월</option>
-                <option value="2024-04">2024년 4월</option>
-                <option value="2024-03">2024년 3월</option>
-                <option value="2024-02">2024년 2월</option>
-                <option value="2024-01">2024년 1월</option>
+              <option value="2024-09">2024년 9월</option>
+              <option value="2024-08">2024년 8월</option>
+              <option value="2024-07">2024년 7월</option>
+              <option value="2024-06">2024년 6월</option>
+              <option value="2024-05">2024년 5월</option>
+              <option value="2024-04">2024년 4월</option>
+              <option value="2024-03">2024년 3월</option>
+              <option value="2024-02">2024년 2월</option>
+              <option value="2024-01">2024년 1월</option>
             </select>
           </div>
-          8월의 책
+          6월의 책
         </div>
         <div class="book-section">
-        <img src="@/assets/book10.jpg" alt="Book Cover" class="book-image" />
+        <img src="@/assets/book2.jpg" alt="Book Cover" class="book-image" />
         <div class="book-info">
           <h2>
-            이기적 유전자
-            <span class="author-name">리처드 도킨스</span>
+            테라피스트
+            <span class="author-name">B. A. 패리스</span>
           </h2>
-          <p>#과학 #생물학</p>
+          <p>#소설 #장편소설</p>
           <div class="gray-box">
-            저자는 이 책에서 인간을 포함한 모든 생명체는 DNA 또는 유전자에 의해 창조된 생존 기계이며, 
-            자기의 유전자를 후세에 남기려는 이기적인 행동을 수행하는 존재라고 주장한다. 
-            이러한 주장은 생물학계를 비롯해 과학계를 떠들썩하게 만들었고, 
-            40년 동안 학계와 언론의 수많은 찬사와 논쟁의 대상이 되었다. 
-            저자는 자신의 주장을 뒷받침하기 위해서 성의 진화, 이타주의의 본질, 협동의 진화, 적응의 범위, 
-            무리의 발생, 가족계획, 혈연선택 등의 주요 쟁점과 게임 이론, 진화적으로 안정한 전략의 실험, 
-            죄수의 딜레마, 박쥐 실험, 꿀벌 실험 등 방대한 현대 연구 이론과 실험을 보여 준다. 
+            《테라피스트》는 보안이 철저한 만큼 폐쇄적이며, 
+            이웃과 끈끈한 만큼 서로를 감시하는 눈길을 거두지 않는 런던의 고급 주택 단지라는 특수한 배경에서 이야기가 펼쳐진다. 
+            고통스러운 트라우마로 불안정한 심리 상태에 놓인 주인공 앨리스가 겪는 의문의 사건들은 
+            현재와 과거의 시점이 교차하면서 예측하기 힘든 방향으로 천천히 달려간다. 
+            의심과 불안이 극한에 달하는 순간 마주하는 반전은 그간 쌓아온 복선의 설계를 
+            한눈에 파악할 수 있는 통쾌함과 시원함을, 오래 기다렸다 받는 선물처럼 기분 좋게 선사한다.
           </div>
         </div>
       </div>
@@ -75,33 +74,34 @@
   export default {
     data() {
       return {
-        selectedDate: "2024-08"
+        selectedDate: "2024-06"
       };
     },
     methods: {
       changePage() {
         // 선택된 날짜에 따라 페이지를 변경
         if (this.selectedDate === "2024-09") {
-            this.$router.push({ name: "MonthSeptember" }); // Vue Router로 라우팅
-          } else if (this.selectedDate === "2024-10") {
-            this.$router.push({ name: "MonthBookPage" }); // Vue Router로 라우팅
-          } else if (this.selectedDate === "2024-08") {
-            this.$router.push({ name: "MonthAugust" })
-          } else if (this.selectedDate === "2024-07") {
-            this.$router.push({ name: "MonthJuly" });
-          } else if (this.selectedDate === "2024-06") {
-            this.$router.push({ name: "MonthJune" });
-          } else if (this.selectedDate === "2024-05") {
-            this.$router.push({ name: "MonthMay" });
-          } else if (this.selectedDate === "2024-04") {
-            this.$router.push({ name: "MonthApril" });
-          } else if (this.selectedDate === "2024-03") {
-            this.$router.push({ name: "MonthMarch" });
-          } else if (this.selectedDate === "2024-02") {
-            this.$router.push({ name: "MonthFebruary" });
-          } else if (this.selectedDate === "2024-01") {
-            this.$router.push({ name: "MonthJanuary" });
-          }
+          this.$router.push({ name: "MonthSeptember" }); // Vue Router로 라우팅
+        } else if (this.selectedDate === "2024-10") {
+          this.$router.push({ name: "MonthBookPage" }); // Vue Router로 라우팅
+        } else if (this.selectedDate === "2024-08") {
+          this.$router.push({ name: "MonthAugust" })
+        } else if (this.selectedDate === "2024-07") {
+          this.$router.push({ name: "MonthJuly" });
+        } else if (this.selectedDate === "2024-06") {
+          this.$router.push({ name: "MonthJune" });
+        } else if (this.selectedDate === "2024-05") {
+          this.$router.push({ name: "MonthMay" });
+        } else if (this.selectedDate === "2024-04") {
+          this.$router.push({ name: "MonthApril" });
+        } else if (this.selectedDate === "2024-03") {
+          this.$router.push({ name: "MonthMarch" });
+        } else if (this.selectedDate === "2024-02") {
+          this.$router.push({ name: "MonthFebruary" });
+        } else if (this.selectedDate === "2024-01") {
+          this.$router.push({ name: "MonthJanuary" });
+        }
+        
       },
       goToMain() {
         // MainPage로 라우팅
