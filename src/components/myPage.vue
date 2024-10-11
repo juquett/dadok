@@ -47,11 +47,39 @@
 
           <!-- 버튼 섹션 (닉네임 변경, 회원 탈퇴) -->
           <div class="button-group">
-            <button @click="editNickname">닉네임 변경</button>
-            <button @click="deleteAccount" color="#C0C0C0">회원 탈퇴</button>
+            <button class="button1" @click="editNickname">닉네임 변경</button>
+            <button class="button2" @click="showDeleteModal">회원 탈퇴</button>
           </div>
         </div>
       </div>
+<!-- 닉네임 변경 모달 -->
+<div v-if="isNicknameModalVisible" class="modal-overlay">
+  <div class="modal">
+    <h2>닉네임 변경</h2>
+    <p>새 닉네임을 입력하세요:</p>
+    <input v-model="newNickname" type="text" placeholder="새 닉네임" class="nickname-input" />
+    <div class="modal-buttons">
+      <button class="confirm-button" @click="confirmNicknameChange">확인</button>
+      <button class="cancel-button" @click="closeNicknameModal">취소</button>
+    </div>
+  </div>
+</div>
+<!-- 회원 탈퇴 모달 -->
+<div v-if="isDeleteModalVisible" class="modal-overlay">
+  <div class="modal">
+    <!-- 큰 글씨, 굵은 텍스트. "회원 탈퇴"만 빨간색 -->
+    <p class="modal-title" style="font-size: 20px;">
+      정말로 <span class="highlight-warning">회원 탈퇴</span>하시겠습니까?
+    </p>
+
+    <!-- 작은 글씨 텍스트 -->
+    <p class="modal-subtext" style="font-size: 10px;">다시는 되돌릴 수 없습니다. 그래도 회원 탈퇴를 하시겠습니까?</p>
+
+    <!-- 버튼들 -->
+    <button @click="confirmDelete" class="confirm-button">확인</button>
+    <button @click="cancelDelete" class="cancel-button">취소</button>
+  </div>
+</div>
     </main>
   </div>
 </template>
@@ -62,7 +90,10 @@ export default {
     return {
       profileImage: "@/assets/default-profile.png", // 기본 프로필 이미지
       nickname: "사용자 닉네임",
-      userId: "user123" // 사용자 아이디
+      userId: "user123", // 사용자 아이디
+      isNicknameModalVisible: false, // 모달 표시 여부
+      newNickname: "", // 새 닉네임 저장 변수
+      isDeleteModalVisible: false, // 모달 창 표시 여부
     };
   },
   methods: {
@@ -88,17 +119,39 @@ export default {
       }
     },
     editNickname() {
-      const newNickname = prompt("새 닉네임을 입력하세요", this.nickname);
-      if (newNickname) {
-        this.nickname = newNickname;
-      }
-    },
+    this.isNicknameModalVisible = true; // 모달 표시
+  },
+  confirmNicknameChange() {
+    if (this.newNickname.trim()) {
+      this.nickname = this.newNickname; // 닉네임 업데이트
+      this.newNickname = ""; // 입력란 초기화
+      this.isNicknameModalVisible = false; // 모달 닫기
+    } else {
+      alert("닉네임을 입력해주세요.");
+    }
+  },
+  closeNicknameModal() {
+    this.newNickname = ""; // 입력란 초기화
+    this.isNicknameModalVisible = false; // 모달 닫기
+  },
     deleteAccount() {
       if (confirm("정말로 회원 탈퇴하시겠습니까?")) {
         // 회원 탈퇴 로직
         alert("회원 탈퇴가 완료되었습니다.");
         this.$router.push({ name: "MainPage" });
       }
+    },
+    showDeleteModal() {
+      this.isDeleteModalVisible = true;
+    },
+    confirmDelete() {
+      // 회원 탈퇴 로직
+      alert("회원 탈퇴가 완료되었습니다.");
+      this.isDeleteModalVisible = false;
+      this.$router.push({ name: "MainPage" });
+    },
+    cancelDelete() {
+      this.isDeleteModalVisible = false;
     }
   }
 };
@@ -258,17 +311,121 @@ h2 {
   margin-top: 100px;
 }
 
-button {
+.button1 {
   background-color: #f4c4b7;
   border: none;
   color: white;
   padding: 10px 20px;
   margin-top: 10px;
-  border-radius: 500px;
+  border-radius: 50px;
+  cursor: pointer;
+}
+
+.button2 {
+  background-color: #C0C0C0;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  margin-top: 10px;
+  border-radius: 50px;
   cursor: pointer;
 }
 
 button:hover {
+  background-color: #e39c87;
+}
+/* 모달 오버레이 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 큰 글씨, 굵은 텍스트 */
+.modal-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* 빨간색으로 강조된 텍스트 */
+.highlight-warning {
+  color: red;
+}
+
+/* 작은 글씨 텍스트 */
+.modal-subtext {
+  font-size: 12px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* 모달 박스 */
+.modal {
+  background-color: white;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  width: 300px;
+  box-sizing: border-box; /* 패딩과 보더를 포함한 너비 계산 */
+}
+
+.modal h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.modal p {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.nickname-input {
+  width: calc(100% - 20px); /* 패딩을 고려한 너비 설정 */
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box; /* 패딩과 보더를 포함한 너비 계산 */
+}
+
+/* 모달 버튼 스타일 */
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.confirm-button {
+  background-color: #C0C0C0; /* 회색 */
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.confirm-button:hover {
+  background-color: #A9A9A9; /* hover 시 더 어두운 회색 */
+}
+
+.cancel-button {
+  background-color: #f4c4b7;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.cancel-button:hover {
   background-color: #e39c87;
 }
 </style>
