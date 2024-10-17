@@ -7,8 +7,13 @@
       <div class="top-header">
         <div class="lefttop">책으로 나를 다독이는 공간</div>
         <div class="auth">
-          <a href="#" class="login" @click="goToLogin">로그인</a>
-          <a href="#" class="signup" @click="goToJoin">회원가입</a>
+          <div v-if="isAuthenticated">
+            <a href="#" class="logout" @click="logout">로그아웃</a>
+          </div>
+          <div v-else>
+            <a href="#" class="login" @click="goToLogin">로그인</a>
+            <a href="#" class="signup" @click="goToJoin">회원가입</a>
+          </div>
         </div>
       </div>
 
@@ -84,27 +89,32 @@ export default {
     changePage() {
       // 선택된 날짜에 따라 페이지를 변경
       if (this.selectedDate === "2024-09") {
-          this.$router.push({ name: "MonthSeptember" }); // Vue Router로 라우팅
+          this.$router.push({ name: "BookPage9" }); // Vue Router로 라우팅
         } else if (this.selectedDate === "2024-10") {
-          this.$router.push({ name: "MonthBookPage" }); // Vue Router로 라우팅
+          this.$router.push({ name: "BookPage10" }); // Vue Router로 라우팅
         } else if (this.selectedDate === "2024-08") {
-          this.$router.push({ name: "MonthAugust" })
+          this.$router.push({ name: "BookPage8" })
         } else if (this.selectedDate === "2024-07") {
-          this.$router.push({ name: "MonthJuly" });
+          this.$router.push({ name: "BookPage7" });
         } else if (this.selectedDate === "2024-06") {
-          this.$router.push({ name: "MonthJune" });
+          this.$router.push({ name: "BookPage6" });
         } else if (this.selectedDate === "2024-05") {
-          this.$router.push({ name: "MonthMay" });
+          this.$router.push({ name: "BookPage5" });
         } else if (this.selectedDate === "2024-04") {
-          this.$router.push({ name: "MonthApril" });
+          this.$router.push({ name: "BookPage4" });
         } else if (this.selectedDate === "2024-03") {
-          this.$router.push({ name: "MonthMarch" });
+          this.$router.push({ name: "BookPage3" });
         } else if (this.selectedDate === "2024-02") {
-          this.$router.push({ name: "MonthFebruary" });
+          this.$router.push({ name: "BookPage2" });
         } else if (this.selectedDate === "2024-01") {
-          this.$router.push({ name: "MonthJanuary" });
+          this.$router.push({ name: "BookPage1" });
         }
     },
+    logout() {
+    localStorage.removeItem('token'); // 로컬 스토리지에서 JWT 삭제
+    this.$store.commit('logout'); // Vuex 상태 갱신
+    this.$router.push('/'); // 로그인 페이지로 리디렉션
+  },
     goToMain() {
       // MainPage로 라우팅
       this.$router.push({ name: "MainPage" });
@@ -123,7 +133,7 @@ export default {
     },
     goToMonthBook() {
       // MonthBookPage로 라우팅
-      this.$router.push({ name: "MonthBookPage" });
+      this.$router.push({ name: "BookPage10" });
     },
     goToMyPage() {
       // myPage로 라우팅
@@ -178,6 +188,13 @@ header {
   border-radius: 5px;
   color: white;
 }
+.auth .logout {
+    margin-right: 60px;
+    background-color: #f4c4b7;
+    padding: 5px 15px;
+    border-radius: 5px;
+    color: white;
+  }
 
 /* 하단 로고와 네비게이션 섹션 */
 .bottom-header {

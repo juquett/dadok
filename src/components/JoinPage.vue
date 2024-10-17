@@ -97,7 +97,6 @@ export default {
     if (!this.validatePassword()) {
       return false;
     }
-
     return true;
   },
 
@@ -114,7 +113,7 @@ export default {
       password: this.password
     };
 
-    axios.post(`http://192.168.92.1:8080/register`, signupData, { timeout: 5000 })
+    axios.post(`http://25.6.251.212:8080/register`, signupData, { timeout: 5000 })
       .then(() => {
         this.successMessage = "회원가입이 성공적으로 완료되었습니다.";
         this.errorMessage = '';
@@ -150,11 +149,15 @@ export default {
     this.$router.push({ name: 'LoginPage' });
   },
   goToMonthBook() {
-    this.$router.push({ name: 'MonthBookPage' });
+    this.$router.push({ name: 'BookPage10' });
   },
   goToMyPage() {
     this.$router.push({ name: "myPage" });
-  }
+  },
+  goToBoard() {
+      // BoardPage로 라우팅
+      this.$router.push({ name: "BoardPage" });
+    },
 }
 
 };

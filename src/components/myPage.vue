@@ -5,8 +5,13 @@
       <div class="top-header">
         <div class="lefttop">책으로 나를 다독이는 공간</div>
         <div class="auth">
-          <a href="#" class="login" @click="goToLogin">로그인</a>
-          <a href="#" class="signup" @click="goToJoin">회원가입</a>
+          <div v-if="isAuthenticated">
+            <a href="#" class="logout" @click="logout">로그아웃</a>
+          </div>
+          <div v-else>
+            <a href="#" class="login" @click="goToLogin">로그인</a>
+            <a href="#" class="signup" @click="goToJoin">회원가입</a>
+          </div>
         </div>
       </div>
 
@@ -19,13 +24,13 @@
         </div>
         <nav>
           <ul>
-            <li><a href="#">게시판</a></li>
+            <li><a href="#" class="Board" @click="goToBoard">게시판</a></li>
             <li><a href="#" class="monthbook" @click="goToMonthBook">이달의책</a></li>
             <li><a href="#">고객센터</a></li>
           </ul>
         </nav>
         <div class="profile">
-          <a href="#"><img src="@/assets/profileicon.png" alt="Profile" /></a>
+          <a href="#"><img @click="goToMyPage" src="@/assets/profileicon.png" alt="Profile" /></a>
         </div>
       </div>
     </header>
@@ -41,7 +46,7 @@
 
           <!-- 사용자 정보 (닉네임, 아이디) -->
           <div class="user-info-section">
-            <h2>{{ nickname }}</h2>
+            <h2>{{ username }}</h2>
             <p class="user-info">아이디: {{ userId }}</p>
           </div>
 
@@ -89,14 +94,25 @@ export default {
   data() {
     return {
       profileImage: "@/assets/default-profile.png", // 기본 프로필 이미지
-      nickname: "사용자 닉네임",
-      userId: "user123", // 사용자 아이디
+      username: "dd",
+      userId: null, // 사용자 아이디
       isNicknameModalVisible: false, // 모달 표시 여부
       newNickname: "", // 새 닉네임 저장 변수
       isDeleteModalVisible: false, // 모달 창 표시 여부
     };
+    
+  },
+  computed: {
+    isAuthenticated() {
+      return this.$store.state.isAuthenticated;
+    }
   },
   methods: {
+    logout() {
+    localStorage.removeItem('token'); // 로컬 스토리지에서 JWT 삭제
+    this.$store.commit('logout'); // Vuex 상태 갱신
+    this.$router.push('/'); // 로그인 페이지로 리디렉션
+  },
     goToMain() {
       this.$router.push({ name: "MainPage" });
     },
@@ -107,10 +123,14 @@ export default {
       this.$router.push({ name: "LoginPage" });
     },
     goToMonthBook() {
-      this.$router.push({ name: "MonthBookPage" });
+      this.$router.push({ name: "BookPage10" });
     },
     goToMyPage() {
       this.$router.push({ name: "myPage" });
+    },
+    goToBoard() {
+      // BoardPage로 라우팅
+      this.$router.push({ name: "BoardPage" });
     },
     changeProfileImage(event) {
       const file = event.target.files[0];
@@ -201,7 +221,13 @@ header {
   border-radius: 5px;
   color: white;
 }
-
+.auth .logout {
+    margin-right: 60px;
+    background-color: #f4c4b7;
+    padding: 5px 15px;
+    border-radius: 5px;
+    color: white;
+  }
 /* 하단 로고와 네비게이션 섹션 */
 .bottom-header {
   display: flex;

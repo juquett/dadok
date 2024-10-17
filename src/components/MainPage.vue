@@ -5,8 +5,13 @@
       <div class="top-header">
         <div class="lefttop">책으로 나를 다독이는 공간</div>
         <div class="auth">
-          <a href="#" class="login" @click="goToLogin">로그인</a>
-          <a href="#" class="signup" @click="goToJoin">회원가입</a>
+          <div v-if="isAuthenticated">
+            <a href="#" class="logout" @click="logout">로그아웃</a>
+          </div>
+          <div v-else>
+            <a href="#" class="login" @click="goToLogin">로그인</a>
+            <a href="#" class="signup" @click="goToJoin">회원가입</a>
+          </div>
         </div>
       </div>
 
@@ -35,14 +40,17 @@
     <div class="slider-container">
       <div class="slider-header"></div>
       <Carousel :itemsToShow="3" autoplay :autoplayTimeout="5000">
-        <Slide v-for="(image, index) in images" :key="index">
-          <img :src="image" alt="slider image" class="slider-image" />
+        <Slide v-for="(image, index) in images" :key="index" class="slide-item">
+          <div class="image-container">
+            <img :src="image.src" alt="slider image" class="slider-image" />
+            <button @click="goToBookPage(index)" class="navigate-button">자세히 보기</button>
+          </div>
         </Slide>
       </Carousel>
     </div>
 
     <div id="app">
-      <h1 class="center-text">도서 추천</h1>
+      <h1 ref="bookRecommendHeader" class="center-text">도서 추천</h1>
       <h2 class="center-text2">이런 책은 어떠신가요?</h2>
       <div ref="animateElement" class="scroll-animation">
   <div class="book-item book1">
@@ -61,8 +69,8 @@
     <img src="@/assets/book3.jpg" alt="book image" />
     <div class="book-info">영원한 천국<br>정유정</div>
   </div>
+  
 </div>
-
     </div>
   </main>
   </div>
@@ -84,31 +92,39 @@ export default {
       currentIndex: 0,
       currentGroup: 0, // 현재 보여줄 이미지 그룹
       images: [
-        require('@/assets/book5month.jpg'), // 첫 번째 이미지 // 모든 이미지 크기 조정해야함
-        require('@/assets/book2.jpg'), // 두 번째 이미지
-        require('@/assets/book4month.jpg'), // 세 번째 이미지
-        require('@/assets/book7month.jpg'), // 네 번째 이미지
-        require('@/assets/book1.jpg'), // 다섯 번째 이미지
-        require('@/assets/book1month.jpg'), // 여섯 번째 이미지
-        require('@/assets/book3month.jpg'), // 일곱 번째 이미지
-        require('@/assets/book8.jpg'), // 여덟 번째 이미지
-        require('@/assets/book2month.jpg'), // 아홉 번째 이미지
-        require('@/assets/book10.jpg'), // 열 번째 이미지
+        { src: require('@/assets/book5month.jpg'), routeName: 'BookPage5' },
+        { src: require('@/assets/book2.jpg'), routeName: 'BookPage6' },
+        { src: require('@/assets/book4month.jpg'), routeName: 'BookPage4' },
+        { src: require('@/assets/book7month.jpg'), routeName: 'BookPage7' },
+        { src: require('@/assets/book1.jpg'), routeName: 'BookPage10' },
+        { src: require('@/assets/book1month.jpg'), routeName: 'BookPage1' },
+        { src: require('@/assets/book3month.jpg'), routeName: 'BookPage3' },
+        { src: require('@/assets/book8.jpg'), routeName: 'BookPage9' },
+        { src: require('@/assets/book2month.jpg'), routeName: 'BookPage2' },
+        { src: require('@/assets/book10.jpg'), routeName: 'BookPage8' },
       ],
     };
   },
   mounted() {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
-      });
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        this.$refs.animateElement.classList.add('visible');
+      }
     });
-    observer.observe(this.$refs.animateElement);
-  },
+  }, { rootMargin: '0px 0px -100px 0px', threshold: 1 }); // rootMargin으로 조정
+
+  observer.observe(this.$refs.bookRecommendHeader); // '도서 추천' 텍스트 관찰
+},
+
+
   beforeUnmount() {
     clearInterval(this.autoSlideInterval);
+  },
+  computed: {
+    isAuthenticated() {
+      return this.$store.state.isAuthenticated;
+    }
   },
   methods: {
     nextSlide() {
@@ -118,18 +134,12 @@ export default {
         this.currentGroup = 0; // 마지막 슬라이드에서 다시 처음으로
       }
     },
-    prevSlide() {
-      if (this.currentGroup > 0) {
-        this.currentGroup--;
-      } else {
-        this.currentGroup = Math.ceil(this.images.length / 3) - 1; // 첫 슬라이드에서 마지막으로
-      }
-    },
-    startAutoSlide() {
-      this.autoSlideInterval = setInterval(() => {
-        this.nextSlide();
-      }, 5000); // 3초마다 자동으로 다음 슬라이드로 이동
-    },
+    logout() {
+    localStorage.removeItem('token'); // 로컬 스토리지에서 JWT 삭제
+    this.$store.commit('logout'); // Vuex 상태 갱신
+    this.$router.push('/'); // 로그인 페이지로 리디렉션
+  },
+
     goToJoin() {
       // JoinPage로 라우팅
       this.$router.push({ name: "JoinPage" });
@@ -148,11 +158,15 @@ export default {
     },
     goToMonthBook() {
       // MonthBookPage로 라우팅
-      this.$router.push({ name: "MonthBookPage" });
+      this.$router.push({ name: "BookPage10" });
     },
     goToMyPage() {
       // myPage로 라우팅
       this.$router.push({ name: "myPage" });
+    },
+    goToBookPage(index) {
+      const selectedBook = this.images[index];
+      this.$router.push({ name: selectedBook.routeName });
     },
   },
 };
@@ -197,6 +211,13 @@ export default {
   }
   
   .auth .signup {
+    margin-right: 60px;
+    background-color: #f4c4b7;
+    padding: 5px 15px;
+    border-radius: 5px;
+    color: white;
+  }
+  .auth .logout {
     margin-right: 60px;
     background-color: #f4c4b7;
     padding: 5px 15px;
@@ -254,36 +275,70 @@ export default {
   /* main style - 이미지 슬라이더 스타일링 */
   .slider-image {
   width: 55%;
-  height: 90%;
+  height: 320px;
   object-fit: cover;
   border-radius: 20px;
   box-shadow: 0px 6px 9px rgba(0, 0, 0, 0.2); /* 그림자 추가 */
+  margin-bottom: 15px; /* 이미지와 버튼 사이 간격 추가 */
 }
-  .slider-container {
-    position: relative;
-    width: 1200px;
-    height: 400px;
-    overflow: hidden;
-    margin: 20px auto;
-    background-color: #FCC8BB; /* 분홍색 배경 */
-    border-radius: 20px; /* 박스 모서리 둥글게 */
-    padding: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* 박스 그림자 */
-    display: flex; /* 플렉스 컨테이너로 설정 */
-    align-items: center; /* 세로 중앙 정렬 */
-    justify-content: center; /* 가로 중앙 정렬 */
-  }
-  
-  .slider-header {
-    position: absolute;
-    top: 10px;
-    left: 15px;
-    font-size: 25px;
-    color: white;
-    font-weight: bold;
-  }
+
+
+.slider-container {
+  position: relative;
+  width: 1200px;
+  height: 450px; /* 박스 높이 조정 */
+  overflow: hidden;
+  margin: 20px auto;
+  background-color: #FCC8BB; /* 분홍색 배경 */
+  border-radius: 20px; /* 박스 모서리 둥글게 */
+  padding: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* 박스 그림자 */
+  display: flex; /* 플렉스 컨테이너로 설정 */
+  align-items: center; /* 세로 중앙 정렬 */
+  justify-content: center; /* 가로 중앙 정렬 */
+  flex-direction: column; /* 이미지와 버튼을 세로로 배치 */
+}
+.slide-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.image-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+.slider-header {
+  position: absolute;
+  top: 10px;
+  left: 15px;
+  font-size: 25px;
+  color: white;
+  font-weight: bold;
+}
+
+.navigate-button {
+  display: block;
+  width: 55%; /* 버튼 너비를 이미지와 맞춤 */
+  padding: 8px 16px;
+  background-color: #ffffff;
+  color: rgb(68, 68, 68);
+  border: none;
+  cursor: pointer;
+  border-radius: 30px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* 박스 그림자 */
+  opacity: 0.6;
+}
+
+.navigate-button:hover {
+  background-color: #ffffff;
+  opacity: 1.0;
+}
+
   .center-text {
-    margin-top: 100px;
+    margin-top: 70px;
     text-align: center;
     font-weight: bold;
   }
@@ -295,28 +350,23 @@ export default {
   }
   
   .scroll-animation {
-  margin-left: 100px;
-  margin-top: 100px;
-  margin-bottom: 200px;
-  display: flex; /* 가로로 나열 */
-
-  justify-content: flex-start; /* 왼쪽 정렬 */
-}
-@keyframes fadeInUp {
-  0% {
     opacity: 0;
-    transform: translateY(60px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  margin-left: 100px;
+  margin-top: 140px;
+  margin-bottom: 150px;
+  display: flex; /* 가로로 나열 */
+  justify-content: flex-start; /* 왼쪽 정렬 */
+  opacity: 0;
+  transform: translateY(60px); /* 애니메이션이 시작되기 전 상태 */
+  transition: opacity 1.5s ease, transform 3s ease;
 }
-
 .scroll-animation.visible {
   opacity: 1;
   transform: translateY(0);
 }
+
+
+
 /* 기본 스타일 */
 .book-item {
   position: relative; /* 자식 요소의 절대 위치 설정을 위해 필요 */
@@ -340,7 +390,7 @@ export default {
   width: 200px; 
   height: 300px;
   transform: rotate(-0deg); /* 살짝 회전 */
-  animation: fadeInUp 1s ease-in-out 0.5s forwards;
+
 }
 
 /* 두 번째 책 스타일 */
@@ -348,7 +398,7 @@ export default {
   width: 200px; 
   height: 300px;
   transform: rotate(-0deg); /* 살짝 회전 */
-  animation: fadeInUp 1.5s ease-in-out 0.5s forwards;
+
 }
 
 /* 세 번째 책 스타일 */
@@ -356,7 +406,7 @@ export default {
   width: 200px;
   height: 300px;
   transform: rotate(+0deg); /* 살짝 회전 */
-  animation: fadeInUp 2s ease-in-out 0.5s forwards;
+
 }
 
 /* 네 번째 책 스타일 */
@@ -365,7 +415,7 @@ export default {
   height: 300px;
   filter: grayscale(50%); /* 흑백 효과 */
   transform: rotate(+0deg); /* 살짝 회전 */
-  animation: fadeInUp 2.5s ease-in-out 0.5s forwards;
+
 }
 .book-info {
   position: absolute;

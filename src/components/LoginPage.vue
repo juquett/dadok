@@ -31,41 +31,61 @@
       </header>
   
       <main>
-        <section class="signup-form">
-          <h2>로그인</h2>
-          <form @submit.prevent="submitForm">
-            <div class="form-group">    
-                <input type="text" id="id" placeholder="아이디" v-model="id" />
-            </div>
-            <div class="form-group">
-                <input type="password" id="password" placeholder="비밀번호" v-model="password" />
-            </div>
-            <div class="form-login">
-            <button type="submit" class="submit-btn">로그인</button>
-            </div>
-            <div class="signup-prompt">
-            <span>회원이 아니신가요?</span></div>
-            <div class="form-signup">
-          <button @click="goToJoin" class="signup-btn">회원가입</button>
-            </div>
-        
-          </form>
-        </section>
-      </main>
+  <section class="signup-form">
+    <h2>로그인</h2>
+    <form @submit.prevent="submitForm">
+      <div class="form-group">    
+          <input type="text" id="id" placeholder="아이디" v-model="userId" /> <!-- userId로 수정 -->
+      </div>
+      <div class="form-group">
+          <input type="password" id="password" placeholder="비밀번호" v-model="password" />
+      </div>
+      <div v-if="error" class="error-message">{{ error }}</div> <!-- 오류 메시지 표시 -->
+      <div class="form-login">
+        <button type="submit" class="submit-btn">로그인</button>
+      </div>
+      <div class="signup-prompt">
+        <span>회원이 아니신가요?</span>
+      </div>
+      <div class="form-signup">
+        <button @click="goToJoin" class="signup-btn">회원가입</button>
+      </div>
+    </form>
+  </section>
+</main>
+
     </div>
   </template>
   
   <script>
   export default {
-    name: 'JoinPage',
+    name: 'LoginPage',
     data() {
       return {
-        nickname: '',
-        id: '',
-        password: ''
+        userId: '',
+        password: '',
+        error: ''
       };
     },
-    methods: {
+methods: {
+  submitForm() {
+    const loginData = { username: this.userId, password: this.password };
+
+    // 로그인 요청 보내기
+    this.$axios.post(`http://25.6.251.212:8080/login`, loginData)
+      .then(response => {
+        localStorage.setItem('token', response.data.token); // JWT 토큰 저장
+        this.$store.commit('login'); // 로그인 상태 업데이트
+        this.$router.push('/mypage'); // 로그인 후 마이페이지로 이동
+      })
+      .catch(err => {
+        this.error = '로그인 실패: ' + err.response.data.message;
+      });
+  },
+  logout() {
+      this.$store.commit('logout');
+      this.$router.push('/');
+    },
 
       goToMain() {
         // MainPage로 라우팅
@@ -81,11 +101,15 @@
     },
     goToMonthBook() {    
       // LoginPage로 라우팅
-    this.$router.push({ name: 'MonthBookPage' });
+    this.$router.push({ name: 'BookPage10' });
     },
     goToMyPage() {
       // myPage로 라우팅
       this.$router.push({ name: "myPage" });
+    },
+    goToBoard() {
+      // BoardPage로 라우팅
+      this.$router.push({ name: "BoardPage" });
     },
     }
   };
@@ -238,6 +262,11 @@
     .submit-btn:hover {
       background-color: #e3a999;
     }
+    .error-message {
+  color: red; /* 오류 메시지 색상 */
+  font-size: 14px; /* 폰트 크기 */
+  margin-top: 10px; /* 위쪽 여백 */
+}
 
     .signup-prompt {
   margin-top: 20px;
