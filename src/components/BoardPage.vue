@@ -19,7 +19,7 @@
       <div class="bottom-header">
         <div class="logo">
           <!-- DADOK 클릭 시 MainPage로 이동 -->
-          <img src="@/assets/logo.png" alt="Logo" />
+          <img src="@/assets/Group (1).png" alt="Logo" />
           <h1 @click="goToMain" style="cursor: pointer;">DADOK</h1>
         </div>
         <nav>
@@ -38,10 +38,18 @@
     <main>
       <section class="boardpage-form">
         <div class="form-board">
-          <button class="btn">게시판</button>
-          <button class="btn2">글쓰기</button>
+          <button class="btn" @click="goToBoard">게시판</button>
+          <button class="btn2" @click="goToWritePost">글쓰기</button>
         </div>
         <hr class="custom-line">
+
+        <!-- 게시물 목록 -->
+        <div class="post-list">
+          <div class="post" v-for="(post, index) in posts" :key="index">
+            <h3>{{ post.title }}</h3>
+            <img :src="post.image" alt="Post Image" />
+          </div>
+        </div>
       </section>
     </main>
   </div>
@@ -49,6 +57,11 @@
 
 <script>
 export default {
+  data() {
+    return {
+      posts: [] // 게시물 목록을 저장할 배열
+    };
+  },
   computed: {
     isAuthenticated() {
       return this.$store.state.isAuthenticated;
@@ -247,5 +260,21 @@ nav ul li a {
   .bottom-header {
     padding: 0 20px; /* 하단 헤더의 여백 조정 */
   }
+}
+.post-list {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.post {
+  margin: 10px 0;
+}
+
+.post img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
 }
 </style>

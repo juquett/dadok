@@ -19,7 +19,7 @@
       <div class="bottom-header">
         <div class="logo">
           <!-- DADOK 클릭 시 MainPage로 이동 -->
-          <img src="@/assets/logo.png" alt="Logo" />
+          <img src="@/assets/Group (1).png" alt="Logo" />
           <h1 @click="goToMain" style="cursor: pointer;">DADOK</h1>
         </div>
         <nav>
@@ -46,8 +46,10 @@
 
           <!-- 사용자 정보 (닉네임, 아이디) -->
           <div class="user-info-section">
-            <h2>{{ username }}</h2>
-            <p class="user-info">아이디: {{ userId }}</p>
+            <div v-if="user && user.name">
+            {{ user.name }}
+            </div>
+            
           </div>
 
           <!-- 버튼 섹션 (닉네임 변경, 회원 탈퇴) -->
@@ -90,18 +92,42 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   data() {
     return {
       profileImage: "@/assets/default-profile.png", // 기본 프로필 이미지
-      username: "dd",
+      user: {},
+      username: "",
       userId: null, // 사용자 아이디
       isNicknameModalVisible: false, // 모달 표시 여부
       newNickname: "", // 새 닉네임 저장 변수
       isDeleteModalVisible: false, // 모달 창 표시 여부
     };
-    
   },
+  created() {
+  const token = localStorage.getItem('token');
+  console.log('저장된 토큰:', token); // 토큰 확인
+  if (!token) {
+    console.error('토큰이 없습니다. 로그인 페이지로 리디렉션합니다.');
+    this.$router.push('/login'); // 토큰이 없으면 로그인 페이지로 리디렉션
+    return;
+  }
+
+  axios
+  .get(`http://172.16.111.42:8080/mypage`, {
+    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } // 토큰 포함
+  })
+
+    .then((response) => {
+      this.user = response.data;
+      console.log('받은 유저 정보:', this.user);
+    })
+    .catch((error) => {
+      console.error('유저 정보를 불러오는 중 에러 발생:', error);
+    });
+},
+
   computed: {
     isAuthenticated() {
       return this.$store.state.isAuthenticated;
@@ -109,10 +135,10 @@ export default {
   },
   methods: {
     logout() {
-    localStorage.removeItem('token'); // 로컬 스토리지에서 JWT 삭제
-    this.$store.commit('logout'); // Vuex 상태 갱신
-    this.$router.push('/'); // 로그인 페이지로 리디렉션
-  },
+      localStorage.removeItem('token'); // 로컬 스토리지에서 JWT 삭제
+      this.$store.commit('logout'); // Vuex 상태 갱신
+      this.$router.push('/'); // 로그인 페이지로 리디렉션
+    },
     goToMain() {
       this.$router.push({ name: "MainPage" });
     },
@@ -139,21 +165,21 @@ export default {
       }
     },
     editNickname() {
-    this.isNicknameModalVisible = true; // 모달 표시
-  },
-  confirmNicknameChange() {
-    if (this.newNickname.trim()) {
-      this.nickname = this.newNickname; // 닉네임 업데이트
+      this.isNicknameModalVisible = true; // 모달 표시
+    },
+    confirmNicknameChange() {
+      if (this.newNickname.trim()) {
+        this.nickname = this.newNickname; // 닉네임 업데이트
+        this.newNickname = ""; // 입력란 초기화
+        this.isNicknameModalVisible = false; // 모달 닫기
+      } else {
+        alert("닉네임을 입력해주세요.");
+      }
+    },
+    closeNicknameModal() {
       this.newNickname = ""; // 입력란 초기화
       this.isNicknameModalVisible = false; // 모달 닫기
-    } else {
-      alert("닉네임을 입력해주세요.");
-    }
-  },
-  closeNicknameModal() {
-    this.newNickname = ""; // 입력란 초기화
-    this.isNicknameModalVisible = false; // 모달 닫기
-  },
+    },
     deleteAccount() {
       if (confirm("정말로 회원 탈퇴하시겠습니까?")) {
         // 회원 탈퇴 로직
@@ -176,6 +202,7 @@ export default {
   }
 };
 </script>
+
 
 <style scoped>
 /* Global Styles */

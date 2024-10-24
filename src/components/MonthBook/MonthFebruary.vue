@@ -16,7 +16,7 @@
         <div class="bottom-header">
           <div class="logo">
             <!-- DADOK 클릭 시 MainPage로 이동 -->
-            <img src="@/assets/logo.png" alt="Logo" />
+            <img src="@/assets/Group (1).png" alt="Logo" />
             <h1 @click="goToMain" style="cursor: pointer;">DADOK</h1>
           </div>
           <nav>

@@ -14,7 +14,7 @@
         <div class="bottom-header">
           <div class="logo">
             <!-- DADOK 클릭 시 MainPage로 이동 -->
-            <img src="@/assets/logo.png" alt="Logo" />
+            <img src="@/assets/Group (1).png" alt="Logo" />
             <h1 @click="goToMain" style="cursor: pointer;">DADOK</h1>
           </div>
           <nav>
@@ -67,51 +67,67 @@
         error: ''
       };
     },
-methods: {
+    methods: {
   submitForm() {
     const loginData = { username: this.userId, password: this.password };
 
     // 로그인 요청 보내기
-    this.$axios.post(`http://25.6.251.212:8080/login`, loginData)
+    this.$axios.post(`http://172.16.111.42:8080/login`, loginData)
       .then(response => {
-        localStorage.setItem('token', response.data.token); // JWT 토큰 저장
-        this.$store.commit('login'); // 로그인 상태 업데이트
-        this.$router.push('/mypage'); // 로그인 후 마이페이지로 이동
+        console.log('로그인 성공 응답:', response); // 응답 로그 추가
+
+        // 서버 응답이 제대로 왔는지 확인
+        if (response && response.data && response.data.token) {
+          localStorage.setItem('token', response.data.token); // JWT 토큰 저장
+          this.$store.commit('login', response.data.token); // 로그인 상태 업데이트
+          this.$router.push('/mypage'); // 로그인 후 마이페이지로 이동
+        } else {
+          throw new Error('응답에 토큰이 없습니다.');
+        }
       })
       .catch(err => {
-        this.error = '로그인 실패: ' + err.response.data.message;
+        console.error('로그인 실패 에러:', err); // 에러 로그 추가
+        
+        // err.response가 없을 경우 예외 처리
+        if (err.response && err.response.data && err.response.data.message) {
+          this.error = '로그인 실패: ' + err.response.data.message;
+        } else {
+          this.error = '로그인 중 오류가 발생했습니다.';
+        }
       });
   },
-  logout() {
-      this.$store.commit('logout');
-      this.$router.push('/');
-    },
 
-      goToMain() {
-        // MainPage로 라우팅
-        this.$router.push({ name: 'MainPage' });
-      },
-      goToJoin() {
-      // JoinPage로 라우팅
+  logout() {
+    this.$store.commit('logout');
+    this.$router.push('/');
+  },
+
+  goToMain() {
+    this.$router.push({ name: 'MainPage' });
+  },
+
+  goToJoin() {
     this.$router.push({ name: 'JoinPage' });
-    },
-    goToLogin() {    
-      // LoginPage로 라우팅
+  },
+
+  goToLogin() {
     this.$router.push({ name: 'LoginPage' });
-    },
-    goToMonthBook() {    
-      // LoginPage로 라우팅
+  },
+
+  goToMonthBook() {
     this.$router.push({ name: 'BookPage10' });
-    },
-    goToMyPage() {
-      // myPage로 라우팅
-      this.$router.push({ name: "myPage" });
-    },
-    goToBoard() {
-      // BoardPage로 라우팅
-      this.$router.push({ name: "BoardPage" });
-    },
-    }
+  },
+
+  goToMyPage() {
+    this.$router.push({ name: "myPage" });
+  },
+
+  goToBoard() {
+    this.$router.push({ name: "BoardPage" });
+  }
+}
+
+
   };
   </script>
     
