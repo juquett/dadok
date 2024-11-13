@@ -156,7 +156,7 @@ export default {
     },
     goToBoard() {
       // BoardPage로 라우팅
-      this.$router.push({ name: "BoardPage" });
+      this.$router.push({ name: "PostListView" });
     },
     changeProfileImage(event) {
       const file = event.target.files[0];

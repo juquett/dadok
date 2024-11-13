@@ -117,7 +117,7 @@
       },
       goToBoard() {
       // BoardPage로 라우팅
-      this.$router.push({ name: "BoardPage" });
+      this.$router.push({ name: "PostListView" });
     },
       goToMonthBook() {
         // MonthBookPage로 라우팅

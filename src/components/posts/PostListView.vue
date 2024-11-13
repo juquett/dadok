@@ -1,6 +1,6 @@
+<!-- src/views/PostList.vue -->
 <template>
-  <div id="app">
-    <header>
+  <header>
       <!-- 상단 로그인, 회원가입 -->
       <div class="top-header">
         <div class="lefttop">책으로 나를 다독이는 공간</div>
@@ -34,45 +34,44 @@
         </div>
       </div>
     </header>
-
     <main>
       <section class="boardpage-form">
         <div class="form-board">
           <button class="btn" @click="goToBoard">게시판</button>
-          <button class="btn2" @click="goToCreatePost">글쓰기</button>
+          <button class="btn2" @click="goToCreate">글쓰기</button>
         </div>
         <hr class="custom-line">
 
         <!-- 게시물 목록 -->
-        <div class="post-list">
-          <div class="post" v-for="(post, index) in posts" :key="index">
-            <h3>{{ post.title }}</h3>
-            <img :src="post.image" alt="Post Image" />
-          </div>
-        </div>
+        <div v-for="post in posts" :key="post.id" @click="goToDetail(post.id)" class="post-item">
+          <img :src="post.image" alt="Post Image" class="post-image" />
+      <h3>{{ post.title }}</h3>
+      <!-- <p>{{ post.content.substring(0, 50) }}...</p> -->
+    </div>
       </section>
     </main>
-  </div>
+
 </template>
 
 <script>
 export default {
-  data() {
-    return {
-      posts: [] // 게시물 목록을 저장할 배열
-    };
-  },
   computed: {
-    isAuthenticated() {
-      return this.$store.state.isAuthenticated;
+    posts() {
+      return this.$store.state.posts;
     }
   },
   methods: {
+    goToDetail(id) {
+      this.$router.push({ name: 'PostDetailView', params: { id } });
+    },
+    goToCreate() {
+      this.$router.push({ name: 'PostCreateView' });
+    },
     logout() {
-    localStorage.removeItem('token'); // 로컬 스토리지에서 JWT 삭제
-    this.$store.commit('logout'); // Vuex 상태 갱신
-    this.$router.push('/'); // 로그인 페이지로 리디렉션
-  },
+      localStorage.removeItem('token'); // 로컬 스토리지에서 JWT 삭제
+      this.$store.commit('logout'); // Vuex 상태 갱신
+      this.$router.push('/'); // 로그인 페이지로 리디렉션
+    },
     goToMain() {
       this.$router.push({ name: 'MainPage' });
     },
@@ -92,22 +91,13 @@ export default {
     goToMyPage() {
       this.$router.push({ name: "myPage" });
     },
-    goToCreatePost() {
-      this.$router.push({ name: "PostCreateView" });
-    }
-    
+
+
   }
 };
 </script>
 
 <style scoped>
-/* Global Styles */
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #f5f5f5;
-}
-
 /* Header Styles */
 header {
   background-color: white;
@@ -196,7 +186,6 @@ nav ul li a {
   height: 35px;
   border-radius: 50%;
 }
-
 /* Main Section Styles */
 .boardpage-form {
   margin-top: 10px;
@@ -260,24 +249,17 @@ nav ul li a {
     width: 120px; /* 버튼의 크기 조정 */
   }
 
-  .bottom-header {
-    padding: 0 20px; /* 하단 헤더의 여백 조정 */
-  }
 }
-.post-list {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.post-item {
+  cursor: pointer;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
 }
-
-.post {
-  margin: 10px 0;
-}
-
-.post img {
-  max-width: 100%;
+.post-image {
+  width: 10%;
   height: auto;
-  border-radius: 8px;
+  border-radius: 5px;
+  margin-bottom: 00px;
 }
+
 </style>

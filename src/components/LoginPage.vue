@@ -123,7 +123,7 @@
   },
 
   goToBoard() {
-    this.$router.push({ name: "BoardPage" });
+    this.$router.push({ name: "PostListView" });
   }
 }
 
