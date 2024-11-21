@@ -43,10 +43,12 @@
         <hr class="custom-line">
 
         <!-- 게시물 목록 -->
+        <div class="post-list">
         <div v-for="post in posts" :key="post.id" @click="goToDetail(post.id)" class="post-item">
-          <img :src="post.image" alt="Post Image" class="post-image" />
-      <h3>{{ post.title }}</h3>
+          <img :src="post.image" alt="" class="post-image" />
+      <h3>{{ post.title.substring(0,12) }}</h3>
       <!-- <p>{{ post.content.substring(0, 50) }}...</p> -->
+       </div>
     </div>
       </section>
     </main>
@@ -57,7 +59,7 @@
 export default {
   computed: {
     posts() {
-      return this.$store.state.posts;
+      return [...this.$store.state.posts].reverse();
     }
   },
   methods: {
@@ -86,7 +88,7 @@ export default {
       this.$router.push({ name: "PostListView" });
     },
     goToMonthBook() {
-      this.$router.push({ name: 'BookPage10' });
+      this.$router.push({ name: 'BookPage11' });
     },
     goToMyPage() {
       this.$router.push({ name: "myPage" });
@@ -250,16 +252,54 @@ nav ul li a {
   }
 
 }
+.post-list {
+  display: flex;
+  flex-wrap: wrap; /* 한 줄에 여러 개씩 배치 */
+  justify-content: start; /* 게시물이 줄의 중앙에 오도록 설정 */
+  gap: 20px; /* 항목 간격을 설정 */
+}
+
 .post-item {
+  flex: 1 0 30%; /* 각 게시물은 30% 너비를 차지 */
+  box-sizing: border-box; /* 패딩 및 마진이 포함되도록 설정 */
+  padding: 20px;
+  margin-bottom: 20px; /* 아래쪽 여백 추가 */
+  border-radius: 8px; /* 카드 모서리 둥글게 */
+  background-color: #ededed; /* 배경 색상 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
   cursor: pointer;
-  padding: 10px;
-  border-bottom: 1px solid #ccc;
+  transition: transform 0.2s ease-in-out; /* 클릭 시 확대 효과 */
+  min-height: 200px; /* 일정 높이 설정 */
+  max-width: 280px;
+}
+.post-item:hover {
+  transform: translateY(-5px); /* 마우스 오버 시 살짝 위로 이동 */
 }
 .post-image {
-  width: 10%;
+  width: 50%; /* 이미지 크기 맞추기 */
   height: auto;
   border-radius: 5px;
-  margin-bottom: 00px;
+  margin-bottom: 10px;
+}
+.post-item h3 {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+.post-item p {
+  font-size: 14px;
+  color: #666;
+  overflow: hidden; /* 텍스트가 박스를 넘지 않도록 설정 */
+  text-overflow: ellipsis; /* 넘치는 텍스트에 ... 표시 */
+  white-space: nowrap; /* 텍스트가 한 줄로 표시되도록 설정 */
+}
+
+/* 반응형 스타일 - 모바일 화면에서는 한 줄에 1개씩 표시 */
+@media (max-width: 768px) {
+  .post-item {
+    flex: 1 0 100%; /* 모바일에서는 한 줄에 하나씩 */
+  }
 }
 
 </style>

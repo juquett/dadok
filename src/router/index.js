@@ -2,11 +2,10 @@ import { createRouter, createWebHistory } from 'vue-router';
 import MainPage from '@/components/MainPage.vue'; // 메인 페이지 컴포넌트
 import JoinPage from '@/components/JoinPage.vue'; // 회원가입 페이지 컴포넌트
 import LoginPage from '@/components/LoginPage.vue';// 로그인 페이지 컴포넌트
-import BoardPage from '@/components/BoardPage.vue';// 게시판 페이지 컴포넌트
 import myPage from '@/components/myPage.vue'; //마이페이지 컴포넌트
 //import MonthDecember from '@/components/MonthBook/MonthDecember.vue'; //이달의책 12월 컴포넌트
-//import MonthNovember from '@/components/MonthBook/MonthNovember.vue'; //이달의책 11월 컴포넌트
-import MonthBookpage from '@/components/MonthBookPage.vue'; //이달의책 메인 10월 페이지 컴포넌트 ( October )
+import MonthNovember from '@/components/MonthBook/MonthNovember.vue'; //이달의책 11월 컴포넌트
+import MonthOctober from '@/components/MonthBook/MonthOctober.vue'; //이달의책 메인 10월 페이지 컴포넌트 ( October )
 import MonthSeptember from '@/components/MonthBook/MonthSeptember.vue'; //이달의책 9월 컴포넌트
 import MonthAugust from '@/components/MonthBook/MonthAugust.vue'; //이달의책 8월 컴포넌트
 import MonthJuly from '@/components/MonthBook/MonthJuly.vue'; //이달의책 7월 컴포넌트
@@ -20,10 +19,16 @@ import PostListView from '@/components/posts/PostListView.vue'; //게시판 목�
 import PostCreateView from '@/components/posts/PostCreateView.vue'; //게시판 글쓰기
 import PostDetailView from '@/components/posts/PostDetailView.vue'; //게시판 디테일
 import PostEditView from '@/components/posts/PostEditView.vue'; //게시판 수정
+import TestLogin from '@/components/TestLogin.vue'; //게시판 수정
 
 
 
 const routes = [
+  {
+    path: '/TestLogin',
+    name: 'TestLogin',
+    component: TestLogin, // 메인 페이지
+  },
   {
     path: '/',
     name: 'MainPage',
@@ -40,16 +45,10 @@ const routes = [
     component: LoginPage, // 회원가입 페이지
   },
   {
-    path: '/BoardPage',
-    name: 'BoardPage',
-    component: BoardPage, // 게시판 페이지
-    // meta: { requiresAuth: true }
-  },
-  {
     path: '/myPage',
     name: 'myPage',
     component: myPage, // 마이페이지
-    meta: { requiresAuth: true } //로그인 권한
+    // meta: { requiresAuth: true } //로그인 권한
   },
   {
     path: '/post',
@@ -80,15 +79,15 @@ const routes = [
   //   name: 'MonthDecember',
   //   component: MonthDecember, // 이달의책 12월 페이지
   // },
-  // {
-  //   path: '/MonthNovember',
-  //   name: 'MonthNovember',
-  //   component: MonthNovember, // 이달의책 11월 페이지
-  // },
   {
-    path: '/MonthBookPage',
+    path: '/MonthNovember',
+    name: 'BookPage11',
+    component: MonthNovember, // 이달의책 11월 페이지
+  },
+  {
+    path: '/MonthOctober',
     name: 'BookPage10',
-    component: MonthBookpage, // 이달의책 10월 페이지
+    component: MonthOctober, // 이달의책 10월 페이지
   },
   {
     path: '/MonthSeptember',

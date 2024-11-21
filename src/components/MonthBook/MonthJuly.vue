@@ -34,6 +34,7 @@
         <div class="pink-box">
           <div class="date-select">
             <select v-model="selectedDate" @change="changePage">
+              <option value="2024-11">2024년 11월</option>
                 <option value="2024-10">2024년 10월</option>
                 <option value="2024-09">2024년 9월</option>
                 <option value="2024-08">2024년 8월</option>
@@ -81,27 +82,29 @@
     methods: {
       changePage() {
         // 선택된 날짜에 따라 페이지를 변경
-        if (this.selectedDate === "2024-09") {
-          this.$router.push({ name: "BookPage9" }); // Vue Router로 라우팅
-        } else if (this.selectedDate === "2024-10") {
-          this.$router.push({ name: "BookPage10" }); // Vue Router로 라우팅
-        } else if (this.selectedDate === "2024-08") {
-          this.$router.push({ name: "BookPage8" })
-        } else if (this.selectedDate === "2024-07") {
-          this.$router.push({ name: "BookPage7" });
-        } else if (this.selectedDate === "2024-06") {
-          this.$router.push({ name: "BookPage6" });
-        } else if (this.selectedDate === "2024-05") {
-          this.$router.push({ name: "BookPage5" });
-        } else if (this.selectedDate === "2024-04") {
-          this.$router.push({ name: "BookPage4" });
-        } else if (this.selectedDate === "2024-03") {
-          this.$router.push({ name: "BookPage3" });
-        } else if (this.selectedDate === "2024-02") {
-          this.$router.push({ name: "BookPage2" });
-        } else if (this.selectedDate === "2024-01") {
-          this.$router.push({ name: "BookPage1" });
-        }
+        if (this.selectedDate === "2024-11") {
+            this.$router.push({ name: "BookPage11" }); // Vue Router로 라우팅
+          } else if (this.selectedDate === "2024-10") {
+            this.$router.push({ name: "BookPage10" }); // Vue Router로 라우팅
+          } else if (this.selectedDate === "2024-09") {
+            this.$router.push({ name: "BookPage9" }); // Vue Router로 라우팅
+          } else if (this.selectedDate === "2024-08") {
+            this.$router.push({ name: "BookPage8" })
+          } else if (this.selectedDate === "2024-07") {
+            this.$router.push({ name: "BookPage7" });
+          } else if (this.selectedDate === "2024-06") {
+            this.$router.push({ name: "BookPage6" });
+          } else if (this.selectedDate === "2024-05") {
+            this.$router.push({ name: "BookPage5" });
+          } else if (this.selectedDate === "2024-04") {
+            this.$router.push({ name: "BookPage4" });
+          } else if (this.selectedDate === "2024-03") {
+            this.$router.push({ name: "BookPage3" });
+          } else if (this.selectedDate === "2024-02") {
+            this.$router.push({ name: "BookPage2" });
+          } else if (this.selectedDate === "2024-01") {
+            this.$router.push({ name: "BookPage1" });
+          }
       },
       goToMain() {
         // MainPage로 라우팅
@@ -115,13 +118,9 @@
         // LoginPage로 라우팅
         this.$router.push({ name: "LoginPage" });
       },
-      goToBoard() {
-      // BoardPage로 라우팅
-      this.$router.push({ name: "BoardPage" });
-    },
       goToMonthBook() {
         // MonthBookPage로 라우팅
-        this.$router.push({ name: "BookPage10" });
+        this.$router.push({ name: "BookPage11" });
       },
       goToMyPage() {
       // myPage로 라우팅
@@ -226,16 +225,32 @@
   
   /* Main Styles */
   .pink-box {
+    margin-top: 0;
     position: relative;
     width: 100%;
     height: 350px;
-    background-color: #f4c4b7;
+    background: linear-gradient(120deg, #ffbcbc, #ff8a8a, #ffbcbc);
+    background-size: 300% 300%; /* 배경을 크게 설정하여 애니메이션 효과 가능 */
+    animation: moveBackground 5s linear infinite; /* 애니메이션 추가 */
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 60px;
     color: white;
     font-weight: bold;
+  }
+  
+  /* 배경 움직임 애니메이션 정의 */
+  @keyframes moveBackground {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
   }
   
   .date-select {

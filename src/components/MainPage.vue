@@ -92,8 +92,10 @@ export default {
       currentIndex: 0,
       currentGroup: 0, // 현재 보여줄 이미지 그룹
       images: [
+
         { src: require('@/assets/book5month.jpg'), routeName: 'BookPage5' },
         { src: require('@/assets/book2.jpg'), routeName: 'BookPage6' },
+        { src: require('@/assets/book11month.jpg'), routeName: 'BookPage11' },
         { src: require('@/assets/book4month.jpg'), routeName: 'BookPage4' },
         { src: require('@/assets/book7month.jpg'), routeName: 'BookPage7' },
         { src: require('@/assets/book1.jpg'), routeName: 'BookPage10' },
@@ -158,7 +160,7 @@ export default {
     },
     goToMonthBook() {
       // MonthBookPage로 라우팅
-      this.$router.push({ name: "BookPage10" });
+      this.$router.push({ name: "BookPage11" });
     },
     goToMyPage() {
       // myPage로 라우팅
