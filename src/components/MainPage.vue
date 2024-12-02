@@ -26,7 +26,7 @@
           <ul>
             <li><a href="#" class="Board" @click="goToBoard">게시판</a></li>
             <li><a href="#" class="monthbook" @click="goToMonthBook">이달의책</a></li>
-            <li><a href="#">고객센터</a></li>
+            <li><a href="#" class="helpdesk" @click="goToHelpDesk">고객센터</a></li>
           </ul>
         </nav>
         <div class="profile">
@@ -47,6 +47,7 @@
           </div>
         </Slide>
       </Carousel>
+      <FloatingWidget />
     </div>
 
     <div id="app">
@@ -78,6 +79,7 @@
   
   
 <script>
+import FloatingWidget from './FloatingWidget.vue'; // 플로팅 위젯 컴포넌트
 import { Carousel, Slide } from 'vue3-carousel';
 import 'vue3-carousel/dist/carousel.css';
 
@@ -85,6 +87,7 @@ export default {
   components: {
     Carousel,
     Slide,
+    FloatingWidget,
   },
   
   data() {
@@ -169,6 +172,9 @@ export default {
     goToBookPage(index) {
       const selectedBook = this.images[index];
       this.$router.push({ name: selectedBook.routeName });
+    },
+    goToHelpDesk() {
+      this.$router.push({ name: "HelpDesk" });
     },
   },
 };

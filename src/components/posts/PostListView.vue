@@ -1,58 +1,61 @@
-<!-- src/views/PostList.vue -->
 <template>
   <header>
-      <!-- 상단 로그인, 회원가입 -->
-      <div class="top-header">
-        <div class="lefttop">책으로 나를 다독이는 공간</div>
-        <div class="auth">
-          <div v-if="isAuthenticated">
-            <a href="#" class="logout" @click="logout">로그아웃</a>
-          </div>
-          <div v-else>
-            <a href="#" class="login" @click="goToLogin">로그인</a>
-            <a href="#" class="signup" @click="goToJoin">회원가입</a>
-          </div>
+    <!-- 상단 로그인, 회원가입 -->
+    <div class="top-header">
+      <div class="lefttop">책으로 나를 다독이는 공간</div>
+      <div class="auth">
+        <div v-if="isAuthenticated">
+          <a href="#" class="logout" @click="logout">로그아웃</a>
+        </div>
+        <div v-else>
+          <a href="#" class="login" @click="goToLogin">로그인</a>
+          <a href="#" class="signup" @click="goToJoin">회원가입</a>
         </div>
       </div>
-
-      <!-- 하단 로고와 네비게이션 메뉴 -->
-      <div class="bottom-header">
-        <div class="logo">
-          <!-- DADOK 클릭 시 MainPage로 이동 -->
-          <img src="@/assets/Group (1).png" alt="Logo" />
-          <h1 @click="goToMain" style="cursor: pointer;">DADOK</h1>
-        </div>
-        <nav>
-          <ul>
-            <li><a href="#" class="Board" @click="goToBoard">게시판</a></li>
-            <li><a href="#" class="monthbook" @click="goToMonthBook">이달의책</a></li>
-            <li><a href="#">고객센터</a></li>
-          </ul>
-        </nav>
-        <div class="profile">
-          <a href="#"><img @click="goToMyPage" src="@/assets/profileicon.png" alt="Profile" /></a>
-        </div>
-      </div>
-    </header>
-    <main>
-      <section class="boardpage-form">
-        <div class="form-board">
-          <button class="btn" @click="goToBoard">게시판</button>
-          <button class="btn2" @click="goToCreate">글쓰기</button>
-        </div>
-        <hr class="custom-line">
-
-        <!-- 게시물 목록 -->
-        <div class="post-list">
-        <div v-for="post in posts" :key="post.id" @click="goToDetail(post.id)" class="post-item">
-          <img :src="post.image" alt="" class="post-image" />
-      <h3>{{ post.title.substring(0,12) }}</h3>
-      <!-- <p>{{ post.content.substring(0, 50) }}...</p> -->
-       </div>
     </div>
-      </section>
-    </main>
 
+    <!-- 하단 로고와 네비게이션 메뉴 -->
+    <div class="bottom-header">
+      <div class="logo">
+        <!-- DADOK 클릭 시 MainPage로 이동 -->
+        <img src="@/assets/Group (1).png" alt="Logo" />
+        <h1 @click="goToMain" style="cursor: pointer;">DADOK</h1>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#" class="Board" @click="goToBoard">게시판</a></li>
+          <li><a href="#" class="monthbook" @click="goToMonthBook">이달의책</a></li>
+          <li><a href="#" class="helpdesk" @click="goToHelpDesk">고객센터</a></li>
+        </ul>
+      </nav>
+      <div class="profile">
+        <a href="#"><img @click="goToMyPage" src="@/assets/profileicon.png" alt="Profile" /></a>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section class="boardpage-form">
+      <div class="form-board">
+        <button class="btn" @click="goToBoard">게시판</button>
+        <button class="btn2" @click="goToCreate">글쓰기</button>
+      </div>
+      <hr class="custom-line" />
+
+      <!-- 게시물 목록 -->
+      <div class="post-list">
+        <div
+          v-for="post in posts"
+          :key="post.id"
+          @click="goToDetail(post.id)"
+          class="post-item"
+        >
+          <img :src="post.image" alt="" class="post-image" />
+          <h3>{{ post.title.substring(0, 12) }}</h3>
+          <!-- <p>{{ post.content.substring(0, 50) }}...</p> -->
+        </div>
+      </div>
+    </section>
+  </main>
 </template>
 
 <script>
@@ -60,44 +63,67 @@ export default {
   computed: {
     posts() {
       return [...this.$store.state.posts].reverse();
-    }
+    },
   },
+  mounted() {
+  this.fetchPosts(); // 컴포넌트 로드 시 게시물 가져오기
+},
   methods: {
     goToDetail(id) {
-      this.$router.push({ name: 'PostDetailView', params: { id } });
+      this.$router.push({ name: "PostDetailView", params: { id } });
     },
     goToCreate() {
-      this.$router.push({ name: 'PostCreateView' });
+      this.$router.push({ name: "PostCreateView" });
     },
+    async fetchPosts() {
+  try {
+    const response = await this.$store.dispatch("fetchPosts"); // 서버에서 전체 게시물 가져오기
+    console.log(response.data); // 서버 응답 데이터 확인
+    this.$store.commit("setPosts", response.data); // 가져온 게시물 Vuex 상태에 저장
+  } catch (error) {
+    console.error("게시물 가져오기 실패:", error);
+  }
+},
+    async addNewPost(newPostData) {
+  try {
+    const response = await this.$store.dispatch("addPost", newPostData); // 서버로 데이터 전송
+    this.$store.commit("addPost", response.data); // Vuex 상태에 추가
+    this.fetchPosts(); // 게시물 목록을 다시 가져옴
+  } catch (error) {
+    console.error("게시물 추가 실패:", error);
+  }
+},
     logout() {
-      localStorage.removeItem('token'); // 로컬 스토리지에서 JWT 삭제
-      this.$store.commit('logout'); // Vuex 상태 갱신
-      this.$router.push('/'); // 로그인 페이지로 리디렉션
+      localStorage.removeItem("token"); // 로컬 스토리지에서 JWT 삭제
+      this.$store.commit("logout"); // Vuex 상태 갱신
+      this.$router.push("/"); // 로그인 페이지로 리디렉션
     },
     goToMain() {
-      this.$router.push({ name: 'MainPage' });
+      this.$router.push({ name: "MainPage" });
     },
     goToJoin() {
-      this.$router.push({ name: 'JoinPage' });
+      this.$router.push({ name: "JoinPage" });
     },
     goToLogin() {
-      this.$router.push({ name: 'LoginPage' });
+      this.$router.push({ name: "LoginPage" });
     },
     goToBoard() {
-      // BoardPage로 라우팅
       this.$router.push({ name: "PostListView" });
     },
     goToMonthBook() {
-      this.$router.push({ name: 'BookPage11' });
+      this.$router.push({ name: "BookPage11" });
     },
     goToMyPage() {
       this.$router.push({ name: "myPage" });
     },
+    goToHelpDesk() {
+      this.$router.push({ name: "HelpDesk" });
+    },
+  },
 
-
-  }
 };
 </script>
+
 
 <style scoped>
 /* Header Styles */

@@ -26,7 +26,7 @@
           <ul>
             <li><a href="#" class="Board" @click="goToBoard">게시판</a></li>
             <li><a href="#" class="monthbook" @click="goToMonthBook">이달의책</a></li>
-            <li><a href="#">고객센터</a></li>
+            <li><a href="#" class="helpdesk" @click="goToHelpDesk">고객센터</a></li>
           </ul>
         </nav>
         <div class="profile">
@@ -155,17 +155,17 @@ export default {
   methods: {
 
     fetchUserData() {
-      this.$axios.get('http://172.16.111.182:3000/mypage', {withCredentials: true})
+      this.$axios.get('/mypage', {withCredentials: true})
         .then(response => {
           // 백엔드 응답에서 userId와 nickname 데이터를 가져옵니다.
           this.userId = response.data.userId;
           this.username = response.data.nickname;
         })
         .catch(error => {
+          console.log(this.userId);
           console.error("사용자 데이터를 가져오지 못했습니다:", error);
         });
     },
-
 
     logout() {
     this.$store.commit('logout'); // Vuex 상태 갱신
@@ -192,6 +192,9 @@ export default {
     goToBoard() {
       // BoardPage로 라우팅
       this.$router.push({ name: "BoardPage" });
+    },
+    goToHelpDesk() {
+      this.$router.push({ name: "HelpDesk" });
     },
     changeProfileImage(event) {
       const file = event.target.files[0];

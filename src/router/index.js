@@ -19,15 +19,32 @@ import PostListView from '@/components/posts/PostListView.vue'; //게시판 목�
 import PostCreateView from '@/components/posts/PostCreateView.vue'; //게시판 글쓰기
 import PostDetailView from '@/components/posts/PostDetailView.vue'; //게시판 디테일
 import PostEditView from '@/components/posts/PostEditView.vue'; //게시판 수정
-import TestLogin from '@/components/TestLogin.vue'; //게시판 수정
-
+import TestPage from '@/components/TestPage.vue'; //테스트 페이지
+import HelpDesk from '@/components/HelpDesk.vue'; //고객센터
+import Contact from '@/components/ContactPage.vue'; //고객센터
+import FloatingWidget from '@/components/FloatingWidget.vue';
 
 
 const routes = [
   {
-    path: '/TestLogin',
-    name: 'TestLogin',
-    component: TestLogin, // 메인 페이지
+    path: '/FloatingWidget',
+    name: 'FloatingWidget',
+    component: FloatingWidget, // 메인 페이지
+  },
+  {
+    path: '/Contact',
+    name: 'Contact',
+    component: Contact, // 메인 페이지
+  },
+  {
+    path: '/TestPage',
+    name: 'TestPage',
+    component: TestPage, // 메인 페이지
+  },
+  {
+    path: '/HelpDesk',
+    name: 'HelpDesk',
+    component: HelpDesk, // 메인 페이지
   },
   {
     path: '/',

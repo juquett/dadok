@@ -21,7 +21,7 @@
           <ul>
             <li><a href="#">게시판</a></li>
             <li><a href="#" class="monthbook" @click="goToMonthBook">이달의책</a></li>
-            <li><a href="#">고객센터</a></li>
+            <li><a href="#" class="helpdesk" @click="goToHelpDesk">고객센터</a></li>
           </ul>
         </nav>
         <div class="profile">
@@ -113,7 +113,7 @@ export default {
       password: this.password
     };
 
-    axios.post(`http://172.16.111.168:3000/register`, signupData, { timeout: 5000 })
+    axios.post(`/register`, signupData, { timeout: 5000 })
       .then(() => {
         this.successMessage = "회원가입이 성공적으로 완료되었습니다.";
         this.errorMessage = '';
@@ -157,6 +157,9 @@ export default {
   goToBoard() {
       // BoardPage로 라우팅
       this.$router.push({ name: "BoardPage" });
+    },
+    goToHelpDesk() {
+      this.$router.push({ name: "HelpDesk" });
     },
 }
 

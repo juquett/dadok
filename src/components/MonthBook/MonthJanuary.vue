@@ -23,7 +23,7 @@
             <ul>
               <li><a href="#" class="Board" @click="goToBoard">게시판</a></li>
               <li><a href="#" class="monthbook" @click="goToMonthBook">이달의책</a></li>
-              <li><a href="#">고객센터</a></li>
+              <li><a href="#" class="helpdesk" @click="goToHelpDesk">고객센터</a></li>
             </ul>
           </nav>
           <div class="profile">
@@ -129,6 +129,9 @@
         // myPage로 라우팅
         this.$router.push({ name: "myPage" });
       },
+      goToHelpDesk() {
+      this.$router.push({ name: "HelpDesk" });
+    },
     }
   };
   </script>

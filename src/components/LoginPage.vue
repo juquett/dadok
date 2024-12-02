@@ -21,7 +21,7 @@
           <ul>
             <li><a href="#">게시판</a></li>
             <li><a href="#" class="monthbook" @click="goToMonthBook">이달의책</a></li>
-            <li><a href="#">고객센터</a></li>
+            <li><a href="#" class="helpdesk" @click="goToHelpDesk">고객센터</a></li>
           </ul>
         </nav>
         <div class="profile">
@@ -85,8 +85,9 @@ methods: {
     const loginData = { username: this.userid, password: this.password };
 
     // 로그인 요청 보내기
-    this.$axios.post(`http://172.16.111.168:3000/login`, loginData)
+    this.$axios.post(`/login`, loginData)
       .then(response => {
+        console.log(response.data);
         const { userID, username } = response.data.user; // 서버 응답에서 데이터 추출 (비밀번호 제외)
 
         // 콘솔로 출력 (개발용)
@@ -129,6 +130,9 @@ logout() {
     // BoardPage로 라우팅
     this.$router.push({ name: "BoardPage" });
   },
+  goToHelpDesk() {
+      this.$router.push({ name: "HelpDesk" });
+    },
   }
 };
 </script>

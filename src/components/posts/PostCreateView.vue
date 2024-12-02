@@ -3,12 +3,15 @@
     <main>
       <div class="main-container">
         <div class="upload-form">
+          <!-- 이미지 업로드 -->
           <input type="file" ref="fileInput" @change="onFileChange" accept="image/*" style="display: none;" />
           <div class="image-upload" @click="triggerFileInput">
-            <img :src="image || defaultImage" alt="Upload" />
+            <img :src="imagePreview || defaultImage" alt="Upload" />
           </div>
+
+          <!-- 제목 및 태그 -->
           <div class="title-tag-container">
-            <input v-model="title" id="title" placeholder="제목을 입력하세요." />
+            <input v-model="title" id="title" placeholder="제목을 입력하세요." required />
             <div class="tag-dropdown">
               <select v-model="selectedTag" @change="addTag">
                 <option disabled value="">태그 선택</option>
@@ -24,11 +27,13 @@
               </div>
             </div>
           </div>
+
+          <!-- 내용 입력 -->
           <textarea v-model="content" id="content" placeholder="내용을 입력하세요." class="content-box"></textarea>
         </div>
       </div>
     
-      <!-- 등록 버튼 -->
+      <!-- 등록 및 취소 버튼 -->
       <div class="upload-container">
         <button class="uploadbtn" @click="submitPost">업로드</button>
         <button class="cancelbtn" @click="cancelUpload">취소</button>
@@ -38,6 +43,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
@@ -45,59 +52,80 @@ export default {
       tags: [],
       content: '',
       image: null,
+      imagePreview: null,
       tagOptions: ["소설", "경제/경영", "시/에세이", "웹소설", "자기계발", "취미", "인문"],
       selectedTag: "",
       defaultImage: require('@/assets/ImageUpload.png'),
     };
   },
   methods: {
+    // 파일 선택 트리거
     triggerFileInput() {
       this.$refs.fileInput.click();
     },
+    // 파일 변경 이벤트 처리
     onFileChange(event) {
       const file = event.target.files[0];
       if (file) {
+        this.image = file;
         const reader = new FileReader();
         reader.onload = (e) => {
-          this.image = e.target.result;
+          this.imagePreview = e.target.result;
         };
         reader.readAsDataURL(file);
       }
     },
+    // 태그 추가
     addTag() {
       if (this.selectedTag && !this.tags.includes(this.selectedTag)) {
         this.tags.push(this.selectedTag);
       }
       this.selectedTag = "";
     },
+    // 태그 제거
     removeTag(tag) {
       this.tags = this.tags.filter(t => t !== tag);
     },
-    submitPost() {
-      if (this.title && this.content) {
-        const newPost = {
-          id: Date.now().toString(),
-          title: this.title,
-          content: this.content,
-          image: this.image,
-          tags: this.tags,
-        };
-        this.$store.commit('addPost', newPost); // Vuex에 전체 게시물 정보 추가
+    // 게시물 업로드
+    async submitPost() {
+      // FormData 생성
+      const formData = new FormData();
+      formData.append('title', this.title);
+      formData.append('content', this.content);
+      formData.append('tags', JSON.stringify(this.tags)); // 배열은 JSON 문자열로 변환
+      if (this.image) {
+        formData.append('image', this.image); // 이미지 파일 추가
+      }
+
+      try {
+        // 서버 요청
+        const response = await axios.post('/api/posts', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        console.log('게시물 업로드 성공:', response.data);
+
+        // 업로드 후 페이지 이동
         this.$router.push('/post'); // 게시물 목록 페이지로 이동
-      } else {
-        alert('제목과 내용을 모두 입력하세요.');
+      } catch (error) {
+        console.error('게시물 업로드 실패:', error.response || error);
       }
     },
+    // 업로드 취소
     cancelUpload() {
       this.title = '';
       this.tags = [];
       this.content = '';
       this.image = null;
-      this.$router.push({ name: 'PostListView' });
-    }
-  }
+      this.imagePreview = null;
+      this.$router.push('/post'); // 목록 페이지로 이동
+    },
+  },
 };
 </script>
+
 
 
 <style scoped>
