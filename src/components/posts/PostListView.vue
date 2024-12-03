@@ -50,9 +50,6 @@
           class="post-item"
         >
         <img :src="'http://172.16.111.168:3000' + post.image" alt="게시물 이미지" class="post-image" />
-
-
-
           <h3>{{ post.title.substring(0, 12) }}</h3>
         </div>
       </div>

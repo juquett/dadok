@@ -17,7 +17,6 @@
     <!-- 하단 로고와 네비게이션 메뉴 -->
     <div class="bottom-header">
       <div class="logo">
-        <!-- DADOK 클릭 시 MainPage로 이동 -->
         <img src="@/assets/Group (1).png" alt="Logo" />
         <h1 @click="goToMain" style="cursor: pointer;">DADOK</h1>
       </div>
@@ -36,78 +35,96 @@
 
   <div class="write-post">
     <main>
-      <div class="main-container" v-if="post">
-        <div class="delete-button">
-          <img src="@/assets/DeleteIcon.png" alt="Delete Post" class="action-icon" @click="deletePost" />
-        </div>
-        <div class="back-button">
-            <img src="@/assets/BackIcon.png" alt="Back" @click="goToBoard" />
-        </div>
-        <h2>{{ post.title }}</h2>
-        <div v-if="post.tags && post.tags.length" class="tags">
-          <span v-for="(tag, index) in post.tags" :key="index" class="tag">
-            {{ tag }}
-          </span>
-        </div>
+      <div v-if="isLoading" class="main-container"> <!-- 로딩 상태 표시 -->
+        <p>Loading...</p>
+      </div>
 
-        <hr class="custom-line">
-        <div class="image-form">
-          <img :src="post.image" alt="Post Image" class="post-image" />
-        </div>
-        <hr class="custom-line">
-        <p class="post-content">{{ post.content }}</p>
-
-        <div class="post-actions">
-          <div class="like-section">
-            <img 
-              :src="isLiked ? require('@/assets/HeartFilled.png') : require('@/assets/Heart.png')" 
-              alt="Like" 
-              class="action-icon" 
-              @click="toggleLike"
-            />
-            <span>{{ likesCount }}</span>
+      <div v-else-if="post" class="main-container"> <!-- 데이터가 로드된 후 게시물 표시 -->
+        <div v-if="post">
+          <div class="delete-button">
+            <img src="@/assets/DeleteIcon.png" alt="Delete Post" class="action-icon" @click="deletePost" />
           </div>
-          <div class="comment-section">
-            <img 
-              src="@/assets/Comment.png" 
-              alt="Comment" 
-              class="action-icon" 
-              @click="scrollToComments"
-            />
-            <span>{{ commentsCount }}</span>
+          <div class="back-button">
+            <img src="@/assets/BackIcon.png" alt="Back" @click="goToBoard" />
+          </div>
+          <h2>{{ post.title }}</h2>
+          <div v-if="post.tags && post.tags.length" class="tags">
+            <span v-for="(tag, index) in post.tags" :key="index" class="tag">
+              {{ tag }}
+            </span>
+          </div>
+          <hr class="custom-line">
+          <div class="image-form">
+            <img :src="'http://172.16.111.168:3000' + post.image" alt="게시물 이미지" class="post-image" />
+          </div>
+          <hr class="custom-line">
+          <p class="post-content">{{ post.content }}</p>
+
+          <div class="post-actions">
+            <div class="like-section">
+              <img 
+                :src="isLiked ? require('@/assets/HeartFilled.png') : require('@/assets/Heart.png')"   
+                alt="Like" 
+                class="action-icon" 
+                @click="toggleLike"
+              />
+              <span>{{ likesCount }}</span>
+            </div>
+            <div class="comment-section">
+              <img 
+                src="@/assets/Comment.png" 
+                alt="Comment" 
+                class="action-icon" 
+                @click="scrollToComments"
+              />
+              <span>{{ commentsCount }}</span>
+            </div>
           </div>
         </div>
       </div>
-    
     </main>
   </div>
 </template>
 
 <script>
-import axios from 'axios'; // axios import
+import axios from 'axios';
 
 export default {
   props: ['id'],
   data() {
     return {
       post: null,
+      isLoading: true,
       likesCount: 0,
       commentsCount: 0,
-      isLiked: false, // 사용자가 좋아요를 눌렀는지 여부
+      isLiked: false,
     };
   },
-  async mounted() {
-    try {
-      // 서버에서 게시물 데이터 가져오기
-      const response = await axios.get(`/api/posts/${this.id}`);
-      this.post = response.data; // 응답 받은 데이터를 post에 할당
-    } catch (error) {
-      console.error("게시물 데이터를 가져오는 데 실패했습니다:", error);
-    }
+  created() {
+    console.log('컴포넌트가 생성되었습니다.');
+    this.fetchPostData();
   },
   methods: {
+    async fetchPostData() {
+      try {
+        console.log('게시물 데이터 요청 중...');
+        const response = await axios.get(`/api/posts/${this.id}`);
+        this.post = response.data;
+        
+        // tags가 JSON 형식의 문자열인 경우 파싱
+        if (this.post.tags && typeof this.post.tags[0] === 'string') {
+          this.post.tags = JSON.parse(this.post.tags[0]);
+        }
+
+        this.isLoading = false; // 로딩 완료
+        console.log('서버에서 받은 데이터:', this.post);
+      } catch (error) {
+        console.error("게시물 데이터를 가져오는 데 실패했습니다:", error);
+        this.isLoading = false;
+      }
+    },
     toggleLike() {
-      this.isLiked = !this.isLiked; 
+      this.isLiked = !this.isLiked;
       this.likesCount += this.isLiked ? 1 : -1;
     },
     scrollToComments() {
@@ -120,9 +137,9 @@ export default {
       this.$router.push({ name: 'PostCreateView' });
     },
     logout() {
-      localStorage.removeItem('token'); // 로컬 스토리지에서 JWT 삭제
-      this.$store.commit('logout'); // Vuex 상태 갱신
-      this.$router.push('/'); // 로그인 페이지로 리디렉션
+      localStorage.removeItem('token');
+      this.$store.commit('logout');
+      this.$router.push('/');
     },
     goToMain() {
       this.$router.push({ name: 'MainPage' });
@@ -134,7 +151,6 @@ export default {
       this.$router.push({ name: 'LoginPage' });
     },
     goToBoard() {
-      // BoardPage로 라우팅
       this.$router.push({ name: "PostListView" });
     },
     goToMonthBook() {
@@ -145,24 +161,26 @@ export default {
     },
     async deletePost() {
       const confirmed = confirm("게시물을 삭제하시겠습니까?");
-
       if (confirmed) {
         try {
-          // 서버에서 게시물 삭제 요청
-          await axios.delete(`http://localhost:8081/api/posts/${this.id}`);
+          await axios.delete(`/api/posts/${this.id}`);
           alert("게시물이 삭제되었습니다.");
           this.$router.push({ name: 'PostListView' });
         } catch (error) {
           alert("게시물 삭제에 실패했습니다.");
         }
       } else {
-        // 사용자가 "아니오"를 선택한 경우
         alert("삭제가 취소되었습니다.");
       }
     },
   }
 };
 </script>
+
+
+
+
+
 
 
 <style scoped>
