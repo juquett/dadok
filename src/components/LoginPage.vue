@@ -14,12 +14,12 @@
       <div class="bottom-header">
         <div class="logo">
           <!-- DADOK 클릭 시 MainPage로 이동 -->
-          <img src="@/assets/logo.png" alt="Logo" />
+          <img src="@/assets/Group (1).png" alt="Logo" />
           <h1 @click="goToMain" style="cursor: pointer;">DADOK</h1>
         </div>
         <nav>
           <ul>
-            <li><a href="#">게시판</a></li>
+            <li><a href="#" class="Board" @click="goToBoard">게시판</a></li>
             <li><a href="#" class="monthbook" @click="goToMonthBook">이달의책</a></li>
             <li><a href="#" class="helpdesk" @click="goToHelpDesk">고객센터</a></li>
           </ul>
@@ -128,7 +128,7 @@ logout() {
   },
   goToBoard() {
     // BoardPage로 라우팅
-    this.$router.push({ name: "BoardPage" });
+    this.$router.push({ name: "PostListView" });
   },
   goToHelpDesk() {
       this.$router.push({ name: "HelpDesk" });

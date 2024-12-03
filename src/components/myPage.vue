@@ -19,7 +19,7 @@
       <div class="bottom-header">
         <div class="logo">
           <!-- DADOK 클릭 시 MainPage로 이동 -->
-          <img src="@/assets/logo.png" alt="Logo" />
+          <img src="@/assets/Group (1).png" alt="Logo" />
           <h1 @click="goToMain" style="cursor: pointer;">DADOK</h1>
         </div>
         <nav>
@@ -40,9 +40,22 @@
         <div class="profile-section">
           <!-- 프로필 사진 및 사진 변경 버튼 -->
           <div class="profile-image-section">
-            <img :src="profileImage" alt="Profile" class="profile-image" />
-            <input type="file" @change="changeProfileImage" class="upload-button" />
-          </div>
+  <label for="profileImageUpload" class="profile-image-label">
+    <img
+      :src="profileImage"
+      alt="Profile Image"
+      class="profile-image"
+    />
+  </label>
+  <input
+    id="profileImageUpload"
+    type="file"
+    accept="image/*"
+    @change="changeProfileImage"
+    class="hidden-input"
+  />
+</div>
+
 
           <!-- 사용자 정보 (닉네임, 아이디) -->
           <div class="user-info-section">
@@ -133,9 +146,9 @@
 export default {
   data() {
     return {
-      profileImage: "@/assets/default-profile.png", // 기본 프로필 이미지
-      username: null,
-      userId: null, // 사용자 아이디
+      profileImage: require('@/assets/ProfilePicture.png'), // 기본 프로필 이미지
+      username: "홍길동",
+      userId: "hong", // 사용자 아이디
       isNicknameModalVisible: false, // 모달 표시 여부
       newNickname: "", // 새 닉네임 저장 변수
       isDeleteModalVisible: false, // 모달 창 표시 여부
@@ -144,8 +157,9 @@ export default {
     
   },
   created() {
-    this.fetchUserData();  // 컴포넌트가 로드될 때 사용자 데이터를 가져옵니다.
-  },
+  this.loadProfileFromLocalStorage(); // LocalStorage에서 데이터 불러오기
+},
+
 
   computed: {
     isAuthenticated() {
@@ -184,32 +198,50 @@ export default {
       this.$router.push({ name: "LoginPage" });
     },
     goToMonthBook() {
-      this.$router.push({ name: "BookPage10" });
+      this.$router.push({ name: "BookPage11" });
     },
     goToMyPage() {
       this.$router.push({ name: "myPage" });
     },
     goToBoard() {
       // BoardPage로 라우팅
-      this.$router.push({ name: "BoardPage" });
+      this.$router.push({ name: "PostListView" });
     },
     goToHelpDesk() {
       this.$router.push({ name: "HelpDesk" });
     },
     changeProfileImage(event) {
-      const file = event.target.files[0];
-      if (file) {
-        this.profileImage = URL.createObjectURL(file); // 이미지 미리보기
-      }
-    },
+    const file = event.target.files[0];
+    if (file) {
+      this.profileImage = URL.createObjectURL(file); // 이미지 미리보기
+      this.saveProfileToLocalStorage(); // 변경사항 저장
+    }
+  },
     editNickname() {
     this.isNicknameModalVisible = true; // 모달 표시
   },
+  saveProfileToLocalStorage() {
+    const profileData = {
+      username: this.username,
+      profileImage: this.profileImage,
+    };
+    localStorage.setItem("profileData", JSON.stringify(profileData));
+  },
+
+  // 페이지 로드 시 프로필 데이터 불러오기
+  loadProfileFromLocalStorage() {
+    const profileData = JSON.parse(localStorage.getItem("profileData"));
+    if (profileData) {
+      this.username = profileData.username || this.username;
+      this.profileImage = profileData.profileImage || this.profileImage;
+    }
+  },
   confirmNicknameChange() {
     if (this.newNickname.trim()) {
-      this.nickname = this.newNickname; // 닉네임 업데이트
+      this.username = this.newNickname; // username 업데이트
       this.newNickname = ""; // 입력란 초기화
       this.isNicknameModalVisible = false; // 모달 닫기
+      this.saveProfileToLocalStorage(); // 변경사항 저장
     } else {
       alert("닉네임을 입력해주세요.");
     }
@@ -351,7 +383,7 @@ nav ul li a {
 /* 가로 너비를 꽉 채우는 탭 버튼 */
 .tab-buttons {
   display: flex;
-  width: 100%;
+  width: 97%;
   justify-content: center;
   margin-bottom: 20px;
 }
@@ -379,12 +411,14 @@ nav ul li a {
 .like-tab, .recommendations-tab {
   width: 100%;
 }
-
+.hidden-input {
+  display: none; /* 파일 선택 버튼 숨기기 */
+}
 .profile-section {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  width: 100%;
+  width: 90%;
   background-color: #FFF9F8;
   padding: 50px;
   border-radius: 20px;
@@ -398,9 +432,10 @@ nav ul li a {
 }
 
 .profile-image {
-  width: 150px;
-  height: 150px;
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
+  margin-left: 30px;
   margin-bottom: 20px;
   object-fit: cover;
   box-shadow: 0px 8px 9px rgba(0, 0, 0, 0.2);
@@ -523,7 +558,7 @@ button:hover {
 }
 
 .confirm-button {
-  background-color: #C0C0C0; /* 회색 */
+  background-color: #f4c4b7; /* 회색 */
   border: none;
   color: white;
   padding: 10px 20px;
@@ -533,11 +568,11 @@ button:hover {
 }
 
 .confirm-button:hover {
-  background-color: #A9A9A9; /* hover 시 더 어두운 회색 */
+  background-color: #e39c87; /* hover 시 더 어두운 회색 */
 }
 
 .cancel-button {
-  background-color: #f4c4b7;
+  background-color: #C0C0C0;
   border: none;
   color: white;
   padding: 10px 20px;
@@ -547,7 +582,7 @@ button:hover {
 }
 
 .cancel-button:hover {
-  background-color: #e39c87;
+  background-color: #A9A9A9;
 }
 
 .center-text, .center-text2 {
