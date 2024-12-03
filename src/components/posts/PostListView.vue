@@ -45,13 +45,15 @@
       <div class="post-list">
         <div
           v-for="post in posts"
-          :key="post.id"
-          @click="goToDetail(post.id)"
+          :key="post._id"
+          @click="goToDetail(post._id)"
           class="post-item"
         >
-          <img :src="post.image" alt="" class="post-image" />
+        <img :src="'http://172.16.111.168:3000' + post.image" alt="게시물 이미지" class="post-image" />
+
+
+
           <h3>{{ post.title.substring(0, 12) }}</h3>
-          <!-- <p>{{ post.content.substring(0, 50) }}...</p> -->
         </div>
       </div>
     </section>
@@ -59,44 +61,45 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
-  computed: {
-    posts() {
-      return [...this.$store.state.posts].reverse();
-    },
+  data() {
+    return {
+      posts: [], // 게시물 데이터를 저장할 배열
+      isAuthenticated: false, // 로그인 상태
+    };
   },
   mounted() {
-  this.fetchPosts(); // 컴포넌트 로드 시 게시물 가져오기
-},
+    this.checkAuthStatus(); // 로그인 상태 확인
+    this.fetchPosts(); // 컴포넌트 로드 시 게시물 가져오기
+  },
+  
   methods: {
+    async fetchPosts() {
+      try {
+        const response = await axios.get("/api/posts"); // 서버로 GET 요청
+        this.posts = response.data; // 응답 데이터를 posts 배열에 저장
+        this.posts.forEach(post => {
+        console.log(post.image); // 서버에서 받은 image 경로 확인
+      });
+      } catch (error) {
+        console.error("게시물 가져오기 실패:", error);
+      }
+    },
+    
     goToDetail(id) {
       this.$router.push({ name: "PostDetailView", params: { id } });
     },
+    
     goToCreate() {
       this.$router.push({ name: "PostCreateView" });
     },
-    async fetchPosts() {
-  try {
-    const response = await this.$store.dispatch("fetchPosts"); // 서버에서 전체 게시물 가져오기
-    console.log(response.data); // 서버 응답 데이터 확인
-    this.$store.commit("setPosts", response.data); // 가져온 게시물 Vuex 상태에 저장
-  } catch (error) {
-    console.error("게시물 가져오기 실패:", error);
-  }
-},
-    async addNewPost(newPostData) {
-  try {
-    const response = await this.$store.dispatch("addPost", newPostData); // 서버로 데이터 전송
-    this.$store.commit("addPost", response.data); // Vuex 상태에 추가
-    this.fetchPosts(); // 게시물 목록을 다시 가져옴
-  } catch (error) {
-    console.error("게시물 추가 실패:", error);
-  }
-},
     logout() {
       localStorage.removeItem("token"); // 로컬 스토리지에서 JWT 삭제
       this.$store.commit("logout"); // Vuex 상태 갱신
-      this.$router.push("/"); // 로그인 페이지로 리디렉션
+      this.isAuthenticated = false; // 로그인 상태 변경
+      this.$router.push("/"); // 메인 페이지로 리디렉션
     },
     goToMain() {
       this.$router.push({ name: "MainPage" });
@@ -119,10 +122,18 @@ export default {
     goToHelpDesk() {
       this.$router.push({ name: "HelpDesk" });
     },
+    checkAuthStatus() {
+      const token = localStorage.getItem("token");
+      if (token) {
+        this.isAuthenticated = true; // 로그인 상태로 설정
+      } else {
+        this.isAuthenticated = false; // 비로그인 상태로 설정
+      }
+    },
   },
-
 };
 </script>
+
 
 
 <style scoped>

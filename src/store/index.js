@@ -8,6 +8,12 @@ const store = createStore({
     posts: [] // 게시물 목록
   },
   mutations: {
+    login(state) {
+      state.isAuthenticated = true;
+    },
+    logout(state) {
+      state.isAuthenticated = false;
+    },
     setUser(state, user) {
       state.isAuthenticated = true;
       state.user = user; // 로그인 후 사용자 정보 저장

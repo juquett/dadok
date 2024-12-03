@@ -264,6 +264,7 @@ export default {
       // 회원 탈퇴 로직
       alert("회원 탈퇴가 완료되었습니다.");
       this.isDeleteModalVisible = false;
+      this.$store.commit('logout'); // Vuex 상태 갱신
       this.$router.push({ name: "MainPage" });
     },
     cancelDelete() {

@@ -1,43 +1,42 @@
-<!-- src/views/PostDetail.vue -->
 <template>
   <header>
-      <!-- 상단 로그인, 회원가입 -->
-      <div class="top-header">
-        <div class="lefttop">책으로 나를 다독이는 공간</div>
-        <div class="auth">
-          <div v-if="isAuthenticated">
-            <a href="#" class="logout" @click="logout">로그아웃</a>
-          </div>
-          <div v-else>
-            <a href="#" class="login" @click="goToLogin">로그인</a>
-            <a href="#" class="signup" @click="goToJoin">회원가입</a>
-          </div>
+    <!-- 상단 로그인, 회원가입 -->
+    <div class="top-header">
+      <div class="lefttop">책으로 나를 다독이는 공간</div>
+      <div class="auth">
+        <div v-if="isAuthenticated">
+          <a href="#" class="logout" @click="logout">로그아웃</a>
+        </div>
+        <div v-else>
+          <a href="#" class="login" @click="goToLogin">로그인</a>
+          <a href="#" class="signup" @click="goToJoin">회원가입</a>
         </div>
       </div>
+    </div>
 
-      <!-- 하단 로고와 네비게이션 메뉴 -->
-      <div class="bottom-header">
-        <div class="logo">
-          <!-- DADOK 클릭 시 MainPage로 이동 -->
-          <img src="@/assets/Group (1).png" alt="Logo" />
-          <h1 @click="goToMain" style="cursor: pointer;">DADOK</h1>
-        </div>
-        <nav>
-          <ul>
-            <li><a href="#" class="Board" @click="goToBoard">게시판</a></li>
-            <li><a href="#" class="monthbook" @click="goToMonthBook">이달의책</a></li>
-            <li><a href="#">고객센터</a></li>
-          </ul>
-        </nav>
-        <div class="profile">
-          <a href="#"><img @click="goToMyPage" src="@/assets/profileicon.png" alt="Profile" /></a>
-        </div>
+    <!-- 하단 로고와 네비게이션 메뉴 -->
+    <div class="bottom-header">
+      <div class="logo">
+        <!-- DADOK 클릭 시 MainPage로 이동 -->
+        <img src="@/assets/Group (1).png" alt="Logo" />
+        <h1 @click="goToMain" style="cursor: pointer;">DADOK</h1>
       </div>
-    </header>
+      <nav>
+        <ul>
+          <li><a href="#" class="Board" @click="goToBoard">게시판</a></li>
+          <li><a href="#" class="monthbook" @click="goToMonthBook">이달의책</a></li>
+          <li><a href="#">고객센터</a></li>
+        </ul>
+      </nav>
+      <div class="profile">
+        <a href="#"><img @click="goToMyPage" src="@/assets/profileicon.png" alt="Profile" /></a>
+      </div>
+    </div>
+  </header>
 
   <div class="write-post">
     <main>
-      <div class="main-container">
+      <div class="main-container" v-if="post">
         <div class="delete-button">
           <img src="@/assets/DeleteIcon.png" alt="Delete Post" class="action-icon" @click="deletePost" />
         </div>
@@ -46,10 +45,10 @@
         </div>
         <h2>{{ post.title }}</h2>
         <div v-if="post.tags && post.tags.length" class="tags">
-      <span v-for="(tag, index) in post.tags" :key="index" class="tag">
-        {{ tag }}
-      </span>
-    </div>
+          <span v-for="(tag, index) in post.tags" :key="index" class="tag">
+            {{ tag }}
+          </span>
+        </div>
 
         <hr class="custom-line">
         <div class="image-form">
@@ -57,7 +56,7 @@
         </div>
         <hr class="custom-line">
         <p class="post-content">{{ post.content }}</p>
-        
+
         <div class="post-actions">
           <div class="like-section">
             <img 
@@ -78,7 +77,6 @@
             <span>{{ commentsCount }}</span>
           </div>
         </div>
-        
       </div>
     
     </main>
@@ -86,6 +84,8 @@
 </template>
 
 <script>
+import axios from 'axios'; // axios import
+
 export default {
   props: ['id'],
   data() {
@@ -96,16 +96,17 @@ export default {
       isLiked: false, // 사용자가 좋아요를 눌렀는지 여부
     };
   },
-  created() {
-  const posts = JSON.parse(localStorage.getItem('posts')) || [];
-  this.post = posts.find(post => post.id === this.id);
-  
-  if (!this.post) {
-    console.error("게시물을 찾을 수 없습니다.");
-  }
-},
-methods: {
-  toggleLike() {
+  async mounted() {
+    try {
+      // 서버에서 게시물 데이터 가져오기
+      const response = await axios.get(`/api/posts/${this.id}`);
+      this.post = response.data; // 응답 받은 데이터를 post에 할당
+    } catch (error) {
+      console.error("게시물 데이터를 가져오는 데 실패했습니다:", error);
+    }
+  },
+  methods: {
+    toggleLike() {
       this.isLiked = !this.isLiked; 
       this.likesCount += this.isLiked ? 1 : -1;
     },
@@ -142,27 +143,27 @@ methods: {
     goToMyPage() {
       this.$router.push({ name: "myPage" });
     },
-    deletePost() {
+    async deletePost() {
       const confirmed = confirm("게시물을 삭제하시겠습니까?");
 
       if (confirmed) {
-    const posts = JSON.parse(localStorage.getItem('posts')) || [];
-    const updatedPosts = posts.filter(post => post.id !== this.id);
-
-    localStorage.setItem('posts', JSON.stringify(updatedPosts));
-    alert("게시물이 삭제되었습니다.");
-    this.$router.push({ name: 'PostListView' });
-  } else {
-    // 사용자가 "아니오"를 선택한 경우
-    alert("삭제가 취소되었습니다.");
+        try {
+          // 서버에서 게시물 삭제 요청
+          await axios.delete(`http://localhost:8081/api/posts/${this.id}`);
+          alert("게시물이 삭제되었습니다.");
+          this.$router.push({ name: 'PostListView' });
+        } catch (error) {
+          alert("게시물 삭제에 실패했습니다.");
+        }
+      } else {
+        // 사용자가 "아니오"를 선택한 경우
+        alert("삭제가 취소되었습니다.");
+      }
+    },
   }
-},
-
-  }
-
-}
-
+};
 </script>
+
 
 <style scoped>
 /* Header Styles */
