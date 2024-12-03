@@ -14,6 +14,16 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 /* 스타일 유지 */
+@font-face {
+  font-family: 'MyCustomFont';
+  src: url('./assets/fonts/BMJUA_otf.otf') format('opentype'); /* 경로 수정 및 'otf' 포맷 변경 */
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  font-family: 'MyCustomFont', sans-serif;
+}
 </style>

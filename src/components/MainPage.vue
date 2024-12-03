@@ -182,9 +182,11 @@ export default {
   
   <style scoped>
   /* Global Styles */
+
+  
   body {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'MyCustomFont', sans-serif;
     background-color: #f5f5f5;
   }
   
@@ -327,6 +329,8 @@ export default {
 }
 
 .navigate-button {
+  font-family: 'MyCustomFont';
+
   display: block;
   width: 55%; /* 버튼 너비를 이미지와 맞춤 */
   padding: 8px 16px;

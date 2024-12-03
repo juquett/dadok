@@ -86,7 +86,10 @@ export default {
 </script>
 
 <style scoped>
+
+
 .floating-widget {
+  font-family: 'MyCustomFont', sans-serif;
   position: fixed;
   bottom: 60px;
   right: 20px;
@@ -116,7 +119,7 @@ export default {
 }
 
 .mbti-selector {
-  font-family: 'Arial', sans-serif;
+  font-family: 'MyCustomFont', sans-serif;
   width: 250px;
   background-color: #fff;
   padding: 20px;

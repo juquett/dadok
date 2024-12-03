@@ -237,6 +237,7 @@ nav ul li a {
 }
 
 .btn, .btn2 {
+  font-family: 'MyCustomFont', sans-serif;
   width: 100px; /* 버튼의 고정 폭 설정 */
   height: 45px;
   padding: 10px;

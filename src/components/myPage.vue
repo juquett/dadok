@@ -9,7 +9,10 @@
             <a href="#" class="logout" @click="logout">로그아웃</a>
           </div>
           <div v-else>
-            <a href="#" class="login" @click="goToLogin">로그인</a>
+            <a href="#" class="login" @click="goToLogin">
+            <img src="@/assets/login_icon.png" alt="Login Icon" class="login-icon" />
+              로그인
+            </a>
             <a href="#" class="signup" @click="goToJoin">회원가입</a>
           </div>
         </div>
@@ -279,7 +282,7 @@ export default {
 /* Global Styles */
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: 'MyCustomFont';
   background-color: #f5f5f5;
 }
 
@@ -383,6 +386,7 @@ nav ul li a {
 
 /* 가로 너비를 꽉 채우는 탭 버튼 */
 .tab-buttons {
+  font-family: 'MyCustomFont';
   display: flex;
   width: 97%;
   justify-content: center;
@@ -390,6 +394,7 @@ nav ul li a {
 }
 
 .tab-buttons button {
+  font-family: 'MyCustomFont';
   flex: 1;
   padding: 15px;
   background-color: #f4c4b7;
@@ -469,6 +474,7 @@ h2 {
 }
 
 .button1 {
+  font-family: 'MyCustomFont';
   background-color: #f4c4b7;
   border: none;
   color: white;
@@ -479,6 +485,7 @@ h2 {
 }
 
 .button2 {
+  font-family: 'MyCustomFont';
   background-color: #C0C0C0;
   border: none;
   color: white;
@@ -639,4 +646,78 @@ button:hover {
   transform: translateY(0);
 }
 
+.comments-section {
+  margin-top: 20px;
+  width: 100%; /* 컨테이너 안에서 가로로 꽉 차게 */
+}
+
+.comments-section h3 {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.comment {
+  border-top: 1px solid #eaeaea;
+  padding: 10px 0;
+  width: 100%; /* 댓글 항목 가로 크기 */
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.comment-author {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.comment-date {
+  font-size: 12px;
+  color: #aaa;
+}
+
+.comment-content {
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+.delete-comment {
+  width: 16px;
+  cursor: pointer;
+}
+
+.comment-form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  width: 100%; /* 댓글 입력 섹션 가로 크기 */
+}
+
+.comment-form textarea {
+  width: 100%; /* 입력창 가로 크기 */
+  height: 60px;
+  resize: none;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #eaeaea;
+  border-radius: 5px;
+}
+
+.comment-form button {
+  align-self: flex-end;
+  padding: 5px 15px;
+  background-color: #f4c4b7;
+  border: none;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.login-icon {
+  width: 16px; /* 이미지 너비 */
+  height: 16px; /* 이미지 높이 */
+  
+}
 </style>

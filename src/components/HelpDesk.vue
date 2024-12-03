@@ -223,6 +223,7 @@
     }
     /* FAQ 섹션 */
     .faq-section {
+  font-family: 'MyCustomFont', sans-serif;
   padding-right: 30px;
   padding-left: 30px;
   background-color: white;
@@ -248,6 +249,7 @@
 }
 
 .faq-list {
+  font-family: 'MyCustomFont', sans-serif;
   list-style: none;
   padding: 0;
 }
@@ -255,6 +257,7 @@
 
 /* FAQ 항목을 동그라미 형태로 만들기 */
 .faq-item {
+  font-family: 'MyCustomFont', sans-serif;
   background-color: white; /* 흰색 배경 */
   border: 2px solid #f4c4b7; /* 핑크색 테두리 */
   text-align: center;
@@ -279,6 +282,7 @@
 
 
 .contact-button {
+  font-family: 'MyCustomFont', sans-serif;
   display: block;
   margin: 20px auto;
   background-color: #f4c4b7;
