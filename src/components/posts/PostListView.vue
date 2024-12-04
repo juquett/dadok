@@ -17,7 +17,6 @@
     <!-- 하단 로고와 네비게이션 메뉴 -->
     <div class="bottom-header">
       <div class="logo">
-        <!-- DADOK 클릭 시 MainPage로 이동 -->
         <img src="@/assets/Group (1).png" alt="Logo" />
         <h1 @click="goToMain" style="cursor: pointer;">DADOK</h1>
       </div>
@@ -33,6 +32,7 @@
       </div>
     </div>
   </header>
+
   <main>
     <section class="boardpage-form">
       <div class="form-board">
@@ -46,25 +46,37 @@
         <div
           v-for="post in posts"
           :key="post._id"
-          @click="goToDetail(post._id)"
+          @click="openPostDetail(post)"
           class="post-item"
         >
-        <img :src="'http://172.16.111.168:3000' + post.image" alt="게시물 이미지" class="post-image" />
+          <img :src="getPostImageUrl(post.image)" alt="게시물 이미지" class="post-image" />
           <h3>{{ post.title.substring(0, 12) }}</h3>
+          <p class="post-date">{{ formatDate(post.createdAt) }}</p> <!-- 날짜 추가 -->
         </div>
       </div>
     </section>
+
+    <!-- 모달 -->
+    <div v-if="selectedPost" class="modal-container">
+      <PostDetailModal 
+        :post="selectedPost" 
+        @close="closeModal" 
+        @post-deleted="handlePostDeleted" 
+      />
+    </div>
   </main>
 </template>
 
 <script>
 import axios from "axios";
+import PostDetailModal from "@/components/posts/PostDetailView.vue"; // 모달 컴포넌트 import
 
 export default {
   data() {
     return {
       posts: [], // 게시물 데이터를 저장할 배열
       isAuthenticated: false, // 로그인 상태
+      selectedPost: null, // 선택된 게시물 정보
     };
   },
   mounted() {
@@ -73,31 +85,45 @@ export default {
   },
   
   methods: {
+    // 게시물 목록 가져오기
     async fetchPosts() {
       try {
         const response = await axios.get("/api/posts"); // 서버로 GET 요청
         this.posts = response.data; // 응답 데이터를 posts 배열에 저장
-        this.posts.forEach(post => {
-        console.log(post.image); // 서버에서 받은 image 경로 확인
-      });
       } catch (error) {
         console.error("게시물 가져오기 실패:", error);
       }
     },
-    
-    goToDetail(id) {
-      this.$router.push({ name: "PostDetailView", params: { id } });
+
+    // 게시물 클릭 시 상세 모달 표시
+    openPostDetail(post) {
+      this.selectedPost = post; // 선택된 게시물을 모달에 전달
     },
-    
+
+    // 모달 닫기
+    closeModal() {
+      this.selectedPost = null; // 모달 닫기
+    },
+
+    // 게시물 삭제 후 목록에서 해당 게시물 삭제
+    handlePostDeleted(postId) {
+      this.posts = this.posts.filter(post => post._id !== postId);
+    },
+
+    // 글쓰기 페이지로 이동
     goToCreate() {
       this.$router.push({ name: "PostCreateView" });
     },
+    
+    // 로그아웃 처리
     logout() {
       localStorage.removeItem("token"); // 로컬 스토리지에서 JWT 삭제
       this.$store.commit("logout"); // Vuex 상태 갱신
       this.isAuthenticated = false; // 로그인 상태 변경
       this.$router.push("/"); // 메인 페이지로 리디렉션
     },
+
+    // 다른 페이지로 이동
     goToMain() {
       this.$router.push({ name: "MainPage" });
     },
@@ -119,17 +145,39 @@ export default {
     goToHelpDesk() {
       this.$router.push({ name: "HelpDesk" });
     },
+
+    // 로그인 상태 확인
     checkAuthStatus() {
       const token = localStorage.getItem("token");
-      if (token) {
-        this.isAuthenticated = true; // 로그인 상태로 설정
-      } else {
-        this.isAuthenticated = false; // 비로그인 상태로 설정
-      }
+      this.isAuthenticated = token ? true : false; // 로그인 상태 설정
     },
+    
+    // 게시물 이미지 경로 처리 함수
+    getPostImageUrl(imagePath) {
+      const baseUrl = "http://25.6.251.212:3000"; // 서버 주소
+      return `${baseUrl}${imagePath}`;
+    },
+
+    // 날짜 형식 처리 함수 (예: 2024-12-04T15:23:42Z -> 2024-12-04)
+    formatDate(dateString) {
+      const date = new Date(dateString); // 문자열을 Date 객체로 변환
+      const options = { 
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit', 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      };
+      return date.toLocaleString('ko-KR', options); // 한국 형식으로 날짜 및 시간 포맷팅
+    }
+  },
+  components: {
+    PostDetailModal, // 모달 컴포넌트 등록
   },
 };
 </script>
+
+
 
 
 
@@ -297,7 +345,7 @@ nav ul li a {
 .post-item {
   flex: 1 0 30%; /* 각 게시물은 30% 너비를 차지 */
   box-sizing: border-box; /* 패딩 및 마진이 포함되도록 설정 */
-  padding: 20px;
+  padding: 15px;
   margin-bottom: 20px; /* 아래쪽 여백 추가 */
   border-radius: 8px; /* 카드 모서리 둥글게 */
   background-color: #ededed; /* 배경 색상 */
@@ -311,8 +359,8 @@ nav ul li a {
   transform: translateY(-5px); /* 마우스 오버 시 살짝 위로 이동 */
 }
 .post-image {
-  width: 50%; /* 이미지 크기 맞추기 */
-  height: auto;
+  width: 120px; /* 이미지 크기 맞추기 */
+  height: 170px;
   border-radius: 5px;
   margin-bottom: 10px;
 }
@@ -335,6 +383,11 @@ nav ul li a {
   .post-item {
     flex: 1 0 100%; /* 모바일에서는 한 줄에 하나씩 */
   }
+}
+.post-date {
+  font-size: 12px;
+  color: #999;
+  margin-top: 10px;
 }
 
 </style>

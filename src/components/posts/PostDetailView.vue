@@ -1,368 +1,399 @@
 <template>
-  <header>
-    <!-- 상단 로그인, 회원가입 -->
-    <div class="top-header">
-      <div class="lefttop">책으로 나를 다독이는 공간</div>
-      <div class="auth">
-        <div v-if="isAuthenticated">
-          <a href="#" class="logout" @click="logout">로그아웃</a>
+  <div v-if="selectedPost" class="modal-overlay">
+    <div class="modal-content">
+      <!-- 삭제 버튼 -->
+      <button class="delete-btn" @click="showDeleteConfirmation">
+        <img src="@/assets/DeleteIcon.png" alt="삭제" class="delete-icon" />
+      </button>
+
+      <!-- 모달 닫기 버튼 -->
+      <button class="close-btn" @click="closeModal">&times;</button>
+
+      <!-- 제목 수정 -->
+      <h2 class="post-title">
+        <input
+          v-if="isEditing"
+          v-model="selectedPost.title"
+          class="input-title"
+          placeholder="게시물 제목을 입력하세요"
+        />
+        <span v-else>{{ selectedPost.title }}</span>
+      </h2>
+
+      <!-- 프로필 이미지, 닉네임, 작성 시간 -->
+      <div class="profile-container">
+        <div class="nickname-container">
+          <img
+            :src="selectedPost.profileImage || require('@/assets/ProfilePicture.png')"
+            alt="프로필 이미지"
+            class="profile-image"
+          />
+          <div class="nickname-and-time">
+            <span class="nickname">{{ selectedPost.nickname || '홍길동' }}</span>
+            <span class="post-time">{{ formatDate(selectedPost.createdAt) }}</span>
+          </div>
         </div>
-        <div v-else>
-          <a href="#" class="login" @click="goToLogin">로그인</a>
-          <a href="#" class="signup" @click="goToJoin">회원가입</a>
+        <div class="tags-container" v-if="selectedPost.tags && selectedPost.tags.length">
+          <span class="tag">{{ selectedPost.tags.join(' ') }}</span>
         </div>
       </div>
+
+      <hr class="custom-line" />
+
+      <!-- 게시물 이미지 -->
+      <div class="post-image-container">
+        <img :src="'http://25.6.251.212:3000' + selectedPost.image" alt="게시물 이미지" class="post-image" />
+      </div>
+
+      <hr class="custom-line" />
+
+      <!-- 게시물 내용 수정 -->
+      <div v-if="isEditing">
+        <textarea
+          v-model="selectedPost.content"
+          class="textarea-content"
+          placeholder="게시물 내용을 입력하세요"
+        ></textarea>
+      </div>
+      <p v-else class="post-content">{{ selectedPost.content }}</p>
+
+      <!-- 수정 버튼 및 저장 버튼 -->
+      <img
+        v-if="!isEditing"
+        src="@/assets/Edit.png"
+        alt="수정"
+        @click="startEditing"
+        class="edit-icon"
+      />
+      <img
+        v-if="isEditing"
+        src="@/assets/Save.png"
+        alt="저장"
+        @click="saveChanges"
+        class="edit-btn"
+      />
     </div>
 
-    <!-- 하단 로고와 네비게이션 메뉴 -->
-    <div class="bottom-header">
-      <div class="logo">
-        <img src="@/assets/Group (1).png" alt="Logo" />
-        <h1 @click="goToMain" style="cursor: pointer;">DADOK</h1>
-      </div>
-      <nav>
-        <ul>
-          <li><a href="#" class="Board" @click="goToBoard">게시판</a></li>
-          <li><a href="#" class="monthbook" @click="goToMonthBook">이달의책</a></li>
-          <li><a href="#">고객센터</a></li>
-        </ul>
-      </nav>
-      <div class="profile">
-        <a href="#"><img @click="goToMyPage" src="@/assets/profileicon.png" alt="Profile" /></a>
+    <!-- 삭제 확인 모달 -->
+    <div v-if="isDeleteConfirmationVisible" class="delete-confirmation-overlay">
+      <div class="delete-confirmation-modal">
+        <p>게시물을 삭제하시겠습니까?</p>
+        <button @click="confirmDelete">삭제</button>
+        <button @click="cancelDelete">취소</button>
       </div>
     </div>
-  </header>
-
-  <div class="write-post">
-    <main>
-      <div v-if="isLoading" class="main-container"> <!-- 로딩 상태 표시 -->
-        <p>Loading...</p>
-      </div>
-
-      <div v-else-if="post" class="main-container"> <!-- 데이터가 로드된 후 게시물 표시 -->
-        <div v-if="post">
-          <div class="delete-button">
-            <img src="@/assets/DeleteIcon.png" alt="Delete Post" class="action-icon" @click="deletePost" />
-          </div>
-          <div class="back-button">
-            <img src="@/assets/BackIcon.png" alt="Back" @click="goToBoard" />
-          </div>
-          <h2>{{ post.title }}</h2>
-          <div v-if="post.tags && post.tags.length" class="tags">
-            <span v-for="(tag, index) in post.tags" :key="index" class="tag">
-              {{ tag }}
-            </span>
-          </div>
-          <hr class="custom-line">
-          <div class="image-form">
-            <img :src="'http://172.16.111.168:3000' + post.image" alt="게시물 이미지" class="post-image" />
-          </div>
-          <hr class="custom-line">
-          <p class="post-content">{{ post.content }}</p>
-
-          <div class="post-actions">
-            <div class="like-section">
-              <img 
-                :src="isLiked ? require('@/assets/HeartFilled.png') : require('@/assets/Heart.png')"   
-                alt="Like" 
-                class="action-icon" 
-                @click="toggleLike"
-              />
-              <span>{{ likesCount }}</span>
-            </div>
-            <div class="comment-section">
-              <img 
-                src="@/assets/Comment.png" 
-                alt="Comment" 
-                class="action-icon" 
-                @click="scrollToComments"
-              />
-              <span>{{ commentsCount }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
   </div>
 </template>
+
+
 
 <script>
 import axios from 'axios';
 
 export default {
-  props: ['id'],
+  props: {
+    post: {
+      type: Object,
+      required: true
+    }
+  },
   data() {
     return {
-      post: null,
-      isLoading: true,
-      likesCount: 0,
-      commentsCount: 0,
-      isLiked: false,
+      isDeleteConfirmationVisible: false, // 삭제 확인 모달 표시 여부
+      isEditing: false, // 수정 모드 상태
     };
   },
-  created() {
-    console.log('컴포넌트가 생성되었습니다.');
-    this.fetchPostData();
+  computed: {
+    selectedPost() {
+      return this.post || {};
+    }
   },
   methods: {
-    async fetchPostData() {
+    closeModal() {
+      this.$emit("close");
+    },
+    showDeleteConfirmation() {
+      this.isDeleteConfirmationVisible = true; // 삭제 확인 모달 열기
+    },
+    async confirmDelete() {
       try {
-        console.log('게시물 데이터 요청 중...');
-        const response = await axios.get(`/api/posts/${this.id}`);
-        this.post = response.data;
-        
-        // tags가 JSON 형식의 문자열인 경우 파싱
-        if (this.post.tags && typeof this.post.tags[0] === 'string') {
-          this.post.tags = JSON.parse(this.post.tags[0]);
-        }
+        const postId = this.selectedPost._id; // 서버에서 사용하는 _id를 사용
+        const response = await axios.delete(`/api/posts/${postId}`);
 
-        this.isLoading = false; // 로딩 완료
-        console.log('서버에서 받은 데이터:', this.post);
+        alert(response.data.message); // 삭제 완료 메시지
+        this.$emit("delete", this.selectedPost); // 부모 컴포넌트에 삭제된 게시물 전달
+        this.goToBoard();
+
+        this.isDeleteConfirmationVisible = false; // 삭제 확인 모달 닫기
+        this.closeModal(); // 모달 닫기
       } catch (error) {
-        console.error("게시물 데이터를 가져오는 데 실패했습니다:", error);
-        this.isLoading = false;
+        console.error('삭제 실패:', error);
+        alert('게시물 삭제에 실패했습니다.');
       }
     },
-    toggleLike() {
-      this.isLiked = !this.isLiked;
-      this.likesCount += this.isLiked ? 1 : -1;
+    cancelDelete() {
+      this.isDeleteConfirmationVisible = false; // 삭제 취소 시 모달 닫기
     },
-    scrollToComments() {
-      const commentsSection = this.$el.querySelector('.comment-section');
-      if (commentsSection) {
-        commentsSection.scrollIntoView({ behavior: 'smooth' });
+    startEditing() {
+      this.isEditing = true; // 수정 모드로 전환
+    },
+    async saveChanges() {
+    try {
+      const postId = this.selectedPost._id; // 게시물 ID
+      const updatedPost = {
+        title: this.selectedPost.title,
+        content: this.selectedPost.content,
+      };
+
+      // 서버로 PUT 요청 보내기
+      const response = await axios.put(`/api/posts/${postId}`, updatedPost);
+
+      if (response.status === 200) { // 성공적인 응답 확인
+        alert("게시물이 수정되었습니다."); // 성공 메시지
+        this.$emit("update", response.data); // 부모 컴포넌트에 수정된 데이터 전달
+        this.isEditing = false; // 수정 모드 종료
+      } else {
+        alert("게시물 수정에 실패했습니다."); // 오류 메시지
       }
-    },
-    goToCreate() {
-      this.$router.push({ name: 'PostCreateView' });
-    },
-    logout() {
-      localStorage.removeItem('token');
-      this.$store.commit('logout');
-      this.$router.push('/');
-    },
-    goToMain() {
-      this.$router.push({ name: 'MainPage' });
-    },
-    goToJoin() {
-      this.$router.push({ name: 'JoinPage' });
-    },
-    goToLogin() {
-      this.$router.push({ name: 'LoginPage' });
+    } catch (error) {
+      console.error("게시물 수정 오류:", error);
+      alert("게시물 수정에 실패했습니다."); // 예외 처리
+    }
+  },
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleString('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
     },
     goToBoard() {
-      this.$router.push({ name: "PostListView" });
-    },
-    goToMonthBook() {
-      this.$router.push({ name: 'BookPage11' });
-    },
-    goToMyPage() {
-      this.$router.push({ name: "myPage" });
-    },
-    async deletePost() {
-      const confirmed = confirm("게시물을 삭제하시겠습니까?");
-      if (confirmed) {
-        try {
-          await axios.delete(`/api/posts/${this.id}`);
-          alert("게시물이 삭제되었습니다.");
-          this.$router.push({ name: 'PostListView' });
-        } catch (error) {
-          alert("게시물 삭제에 실패했습니다.");
-        }
-      } else {
-        alert("삭제가 취소되었습니다.");
-      }
+      this.$router.push({ name: "PostListView" }); // 게시물 목록 페이지로 이동
     },
   }
 };
+
 </script>
 
-
-
-
-
-
-
 <style scoped>
-/* Header Styles */
-header {
-  background-color: white;
-  border-bottom: 1px solid #eaeaea;
-}
-
-/* 상단 로그인/회원가입 섹션 */
-.top-header {
+/* 스타일 수정 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  padding: 0 30px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #eaeaea;
+  z-index: 9999;
+  overflow: auto;
 }
 
-.lefttop {
-  font-size: 12px;
-  color: #a1a1a1;
-  margin-left: 65px;
+.modal-content {
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  position: relative;
 }
 
-.auth a {
-  margin-left: 30px;
-  text-decoration: none;
-  color: black;
-  font-size: 14px;
+.close-btn {
+  position: absolute;
+  top: 5px;
+  right: 15px;
+  color: #bbbbbb;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 2em;
+  cursor: pointer;
+  transition: color 0.3s ease;
 }
 
-.auth .signup {
-  margin-right: 60px;
-  background-color: #f4c4b7;
-  padding: 5px 15px;
-  border-radius: 5px;
+.delete-btn {
+  position: absolute;
+  top: 13px;
+  right: 50px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  width: 20px; /* 버튼의 크기 조정 */
+  height: 20px; /* 버튼의 크기 조정 */
+}
+
+.delete-btn img {
+  width: 100%; /* 이미지 크기를 버튼에 맞게 조정 */
+  height: 100%; /* 이미지 크기를 버튼에 맞게 조정 */
+  object-fit: contain; /* 이미지 비율을 유지하면서 버튼 크기에 맞추기 */
+}
+.delete-btn:hover {
+  transform: scale(1.1); /* 호버 시 확대 */
+}
+
+
+.delete-confirmation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.delete-confirmation-modal {
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  width: 300px;
+}
+
+.delete-confirmation-modal button {
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 1em;
+}
+
+.delete-confirmation-modal button:hover {
+  background-color: #f44336;
   color: white;
 }
-.auth .logout {
-    margin-right: 60px;
-    background-color: #f4c4b7;
-    padding: 5px 15px;
-    border-radius: 5px;
-    color: white;
-  }
-/* 하단 로고와 네비게이션 섹션 */
-.bottom-header {
+.edit-btn {
+  position: absolute; /* 오른쪽 위에 고정 */
+  top: 13px; /* 상단에서의 거리 */
+  right: 85px; /* 오른쪽에서의 거리 */
+  width: 20px; /* 이미지 크기 */
+  height: 20px; /* 이미지 크기 */
+  cursor: pointer; /* 마우스 포인터 변경 */
+  transition: transform 0.2s ease; /* 호버 효과 */
+}
+
+.edit-btn:hover {
+  transform: scale(1.1); /* 호버 시 확대 */
+}
+.edit-icon {
+  position: absolute; /* 오른쪽 위에 고정 */
+  top: 13px; /* 상단에서의 거리 */
+  right: 85px; /* 오른쪽에서의 거리 */
+  width: 20px; /* 이미지 크기 */
+  height: 20px; /* 이미지 크기 */
+  cursor: pointer; /* 마우스 포인터 변경 */
+  transition: transform 0.2s ease; /* 호버 효과 */
+}
+
+.edit-icon:hover {
+  transform: scale(1.1); /* 호버 시 확대 */
+}
+
+.post-image-container {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 80px;
-  color: #f4c4b7;
-  height: 70px;
+  justify-content: center; /* 수평 중앙 정렬 */
+  align-items: center; /* 수직 중앙 정렬 */
+  height: 100%; /* 부모 요소의 높이를 꽉 채움 */
 }
-
-.logo {
+.profile-container {
   display: flex;
-  align-items: center;
+  justify-content: space-between; /* 닉네임 왼쪽, 태그 오른쪽 */
+  align-items: center; /* 수직 중앙 정렬 */
+  margin-top: 10px; /* 제목과 프로필 사이 간격 */
 }
 
-.logo img {
-  height: 25px;
-  margin-right: 7px;
-}
-
-nav ul {
+.nickname-container {
   display: flex;
-  list-style: none;
-  margin: 0;
-  padding: 0;
+  align-items: center; /* 닉네임과 프로필 이미지를 수직 중앙 정렬 */
 }
 
-nav ul li {
-  margin: 0 50px;
+.profile-image {
+  width: 40px; /* 프로필 사진 크기 */
+  height: 40px; /* 프로필 사진 크기 */
+  border-radius: 50%; /* 원형 프로필 이미지 */
+  margin-right: 10px; /* 이미지와 닉네임 사이 간격 */
 }
 
-nav ul li a {
-  text-decoration: none;
-  color: black;
-  font-size: 14px;
+.nickname {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 4px; /* 닉네임과 날짜 간 간격 */
+}
+.nickname-and-time {
+  display: flex;
+  flex-direction: column; /* 닉네임과 날짜를 수직 정렬 */
 }
 
-.profile {
-  margin-right: 25px;
+.tags-container {
+  display: flex;
+  gap: 8px; /* 태그 사이 간격 */
+  flex-wrap: wrap; /* 태그가 많을 경우 다음 줄로 넘어감 */
+  justify-content: flex-end; /* 오른쪽 정렬 */
 }
 
-.profile img {
-  height: 35px;
-  border-radius: 50%;
-}
-
-.post-image {
-  width: 10%;
-  height: auto;
-  border-radius: 5px;
-  margin-bottom: 00px;
-}
 .tag {
   display: inline-block;
-  background-color: #f4c4b7;
-  color: white;
-  padding: 5px;
-  margin-right: 5px;
-  border-radius: 5px;
-  padding-right: 15px;
-  padding-left: 15px;
+  background-color: #ffffff; /* 태그 배경색 (밝은 파란색) */
+  color: #f4c4b7; /* 텍스트 색상 */
+  font-size: 12px; /* 글자 크기 */
+  font-weight: 600; /* 글자 두께 */
+  padding: 4px 10px; /* 내부 여백 */
+  border-radius: 12px; /* 둥근 모서리 */
+  border: 1px solid #f4c4b7; /* 테두리 */
+  transition: background-color 0.3s, color 0.3s; /* 호버 효과를 부드럽게 */
+  cursor: default; /* 클릭 가능하지 않다는 표시 */
 }
-.main-container {
-  position: relative; /* 버튼 위치를 조정하기 위해 추가 */
-  border: 2px solid #eaeaea;
-  border-radius: 30px;
-  padding: 20px;
-  max-width: 700px;
-  height: 100%;
-  margin: 20px auto;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
+
+.tag:hover {
+  background-color: #f4c4b7; /* 호버 시 배경색 */
+  color: #fff; /* 호버 시 텍스트 색상 */
 }
-.custom-line {
-  border: 1px solid #eaeaea;
+
+.tag-list {
+  display: inline-block;
 }
-.image-form {
-  margin-top: 5%;
-  margin-bottom: 5%;
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* 수평 중앙 정렬 */
-}
+
+
 .post-image {
-  width: 20%;
-  height: auto;
-  border-radius: 5px;
-  margin-bottom: 00px;
-}
-.delete-button {
-  position: absolute;
-  top: 20px;
-  right: 60px;
-  cursor: pointer;
-}
-.delete-button img {
-  width: 24px; /* 버튼 크기 조절 */
-  height: auto;
-}
-.back-button {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  cursor: pointer;
-}
-.back-button img {
-  width: 24px; /* 버튼 크기 조절 */
-  height: auto;
+  width: 100%; /* 원하는 크기로 설정, 예: 50% */
+  max-width: 140px; /* 최대 크기를 설정 */
+  height: 200px; /* 비율을 유지하면서 크기 조정 */
+  border-radius: 12px;
 }
 .post-content {
-  white-space: pre-line;
+  min-height: 150px;
+  max-height: 250px; /* 최대 높이 설정 */
+  overflow-y: auto; /* 세로 스크롤 활성화 */
+  white-space: pre-line; /* 줄바꿈 유지 */
+  font-size: 13px; /* 텍스트 크기 */
+  line-height: 1.6; /* 줄 간격 */
+  color: #333; /* 텍스트 색상 */
+  margin-top: 20px; /* 상단 간격 */
+  padding: 10px; /* 내부 여백 */
+  border: 1px solid #ddd; /* 선택적 테두리 추가 */
+  border-radius: 8px; /* 선택적 모서리 둥글게 */
 }
-.post-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  margin-top: 80px;
-  gap: 20px; /* 좋아요와 댓글 간격 */
-  
+.post-time {
+  display: block;
+  font-size: 12px;
+  color: #888;
+  margin-top: 2px;
 }
-
-.like-section, .comment-section {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
+.textarea-content {
+  width: 96%;
+  min-height: 150px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  resize: none;
 }
-
-.action-icon {
-  width: 24px;
-  height: auto;
-  margin-right: 8px;
-}
-
-.post-actions span {
-  font-size: 14px;
-  color: #555;
-}
-
 </style>
