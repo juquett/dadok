@@ -1,6 +1,6 @@
 <template>
-  <div v-if="selectedPost" class="modal-overlay">
-    <div class="modal-content">
+  <div v-if="selectedPost" class="modal-overlay" @click="closeModal">
+    <div class="modal-content" @click.stop>
       <!-- 삭제 버튼 -->
       <button class="delete-btn" @click="showDeleteConfirmation">
         <img src="@/assets/DeleteIcon.png" alt="삭제" class="delete-icon" />
@@ -72,45 +72,33 @@
         @click="saveChanges"
         class="edit-btn"
       />
+      
 
-      <!-- 좋아요 버튼 -->
-      <div class="like-container">
-        <img
-          :src="isLiked ? require('@/assets/HeartFilled.png') : require('@/assets/Heart.png')"
-          alt="좋아요"
-          class="like-icon"
-          @click="toggleLike"
-        />
-        <span>{{ likeCount }}</span>
-      </div>
-
-      <!-- 댓글 작성 -->
-      <div class="comments-section">
-        <h3>댓글</h3>
+<!-- 댓글 작성 -->
+<div class="comments-section">
+        
 
         <!-- 댓글 입력 -->
         <div class="comment-input">
-          <!-- 프로필 이미지와 닉네임 -->
           <div class="profile-container">
             <img
               :src="selectedPost.profileImage || require('@/assets/ProfilePicture.png')"
               alt="프로필 이미지"
               class="comment-profile-image"
             />
-            <span class="comment-nickname">{{ selectedPost.nickname || '홍길동' }}</span>
           </div>
           <textarea
             v-model="newComment"
             placeholder="댓글을 입력하세요"
             class="textarea-comment"
           ></textarea>
-          <button @click="submitComment">댓글 작성</button>
+          <button @click="submitComment">등록</button>
         </div>
 
         <!-- 댓글 목록 -->
         <div v-if="comments.length > 0" class="comment-list">
           <div v-for="comment in comments" :key="comment._id" class="comment-item">
-            <!-- 프로필 이미지와 닉네임 -->
+            <!-- 댓글 상단 -->
             <div class="comment-header">
               <img
                 :src="comment.profileImage || require('@/assets/ProfilePicture.png')"
@@ -118,10 +106,17 @@
                 class="comment-profile-image"
               />
               <span class="comment-nickname">{{ comment.nickname || '홍길동' }}</span>
+              <!-- 삭제 이미지 -->
+              <img
+                src="@/assets/DeleteIcon.png"
+                alt="삭제"
+                class="delete-comment-icon"
+                @click="deleteComment(comment._id)"
+              />
             </div>
+            <!-- 댓글 본문 -->
             <p class="comment-text">{{ comment.text }}</p>
             <p class="comment-time">{{ formatDate(comment.createdAt) }}</p>
-            <button class="delete-comment-btn" @click="deleteComment(comment._id)">삭제</button>
           </div>
         </div>
       </div>
@@ -137,6 +132,7 @@
     </div>
   </div>
 </template>
+
 
 <script>
 import axios from "axios";
@@ -165,6 +161,8 @@ export default {
   },
   mounted() {
     this.fetchComments();
+
+    setInterval(this.fetchComments, 1000);
   },
   methods: {
     async toggleLike() {
@@ -248,17 +246,19 @@ async submitComment() {
   }
 },
 async deleteComment(commentId) {
-      try {
-        // 서버에서 댓글 삭제 요청
-        const response = await axios.delete(`/api/posts/${this.selectedPost._id}/comments/${commentId}`);
-        alert(response.data.message); // 삭제 성공 메시지
-        // 댓글 목록에서 해당 댓글을 삭제
-        this.comments = this.comments.filter(comment => comment._id !== commentId);
-      } catch (error) {
-        console.error("댓글 삭제 실패:", error);
-        alert("댓글 삭제에 실패했습니다.");
-      }
-    },
+  try {
+    console.log("삭제 요청 시작");
+    console.log(this.comments);
+    console.log(this.selectedPost._id, commentId);
+    const response = await axios.delete(`/api/posts/${this.selectedPost._id}/comments/${commentId}`);
+    console.log("삭제 요청 성공:", response.data);
+    alert(response.data.message);
+    this.comments = this.comments.filter(comment => comment._id !== commentId);
+  } catch (error) {
+    console.error("댓글 삭제 실패:", error.response || error.message);
+    alert("댓글 삭제에 실패했습니다.");
+  }
+},
     formatDate(dateString) {
       const date = new Date(dateString);
       return date.toLocaleString("ko-KR", {
@@ -513,21 +513,7 @@ async deleteComment(commentId) {
   border-radius: 5px;
   resize: none;
 }
-/* 좋아요 버튼 스타일 */
-.like-container {
-  position: absolute;
-  bottom: 10px;
-  left: 30px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
 
-.like-icon {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-}
 /* 댓글 입력란 스타일 */
 .comment-input {
   display: flex;
@@ -542,28 +528,30 @@ async deleteComment(commentId) {
 }
 
 .comment-input .profile-image {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   margin-right: 10px;
+  
 }
 
-.comment-input .nickname {
-  font-weight: bold;
-  margin-right: 10px;
-}
+
 
 .comment-input .textarea-comment {
+  margin-top: 10px;
   width: 100%;
-  height: 60px;
-  padding: 10px;
-  border-radius: 5px;
+  height: 18px;
+  padding: 15px;
+  border-radius: 30px;
   border: 1px solid #ccc;
   resize: none;
 }
 
 .comment-input button {
-  background-color: #4caf50;
+  margin-top: 10px;
+  width: 70px;
+  height: 50px;
+  background-color: #f4c4b7;
   color: white;
   border: none;
   padding: 10px 15px;
@@ -573,14 +561,22 @@ async deleteComment(commentId) {
 }
 
 .comment-input button:hover {
-  background-color: #45a049;
+  background-color: #ffb5a0;
 }
 
 /* 댓글 목록 스타일 */
 .comment-item {
-  display: flex;
-  flex-direction: column;
+  margin-bottom: 20px;
   margin-top: 20px;
+  padding: 10px;
+  border-radius: 5px;
+  position: relative; /* 내부 요소 위치 설정 */
+  background-color: #ffe2db; /* 짝수 댓글 항목에 다른 배경색 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+}
+
+.comment-item:nth-child(even) {
+  background-color: #ffe2db; /* 짝수 댓글 항목에 다른 배경색 */
 }
 
 .comment-header {
@@ -589,8 +585,8 @@ async deleteComment(commentId) {
 }
 
 .comment-profile-image {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   margin-right: 10px;
 }
@@ -600,7 +596,7 @@ async deleteComment(commentId) {
 }
 
 .comment-text {
-  margin: 5px 0;
+  margin: 10px 0;
 }
 
 .comment-time {
@@ -608,14 +604,23 @@ async deleteComment(commentId) {
   color: gray;
   margin-top: 5px;
 }
-.delete-comment-btn {
-  background-color: red;
-  color: white;
-  border: none;
-  padding: 5px;
+.delete-comment-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px; /* 이미지를 댓글의 오른쪽 위에 배치 */
+  width: 20px;
+  height: 20px;
   cursor: pointer;
 }
-.delete-comment-btn:hover {
-  background-color: darkred;
+.delete-comment-icon:hover {
+  opacity: 0.7; /* 이미지에 호버 효과 */
 }
+.custom-line {
+  width: 100%; /* 선의 너비 */
+  height: 1px; /* 선의 두께 */
+  background-color: #d9d9d9; /* 선 색상 (여기서 #ffb5a0은 예시) */
+  margin: 10px 0; /* 위아래 간격 */
+  border: none; /* 기본 테두리 제거 */
+}
+
 </style>

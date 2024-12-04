@@ -93,7 +93,7 @@ export default {
   position: fixed;
   bottom: 60px;
   right: 20px;
-  background-color: #f3aeff; /* 부드러운 블루 색상 */
+  background-color: #eda894; /* 부드러운 블루 색상 */
   padding: 10px;
   color: white;
   border-radius: 50%; /* 원형으로 만들기 */

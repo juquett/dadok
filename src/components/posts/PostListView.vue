@@ -57,12 +57,13 @@
     </section>
 
     <!-- 모달 -->
-    <div v-if="selectedPost" class="modal-container">
-      <PostDetailModal 
-        :post="selectedPost" 
-        @close="closeModal" 
-        @post-deleted="handlePostDeleted" 
-      />
+    <div v-if="selectedPost" class="modal-container" @click="closeModalOutside">
+      <div class="modal-content" @click.stop> <!-- 내부 클릭은 모달을 닫지 않도록 stopPropagation 사용 -->
+        <PostDetailModal 
+          :post="selectedPost" 
+          @close="closeModal" 
+          @post-deleted="handlePostDeleted" />
+      </div>
     </div>
   </main>
 </template>
@@ -83,6 +84,7 @@ export default {
     this.checkAuthStatus(); // 로그인 상태 확인
     this.fetchPosts(); // 컴포넌트 로드 시 게시물 가져오기
 
+    setInterval(this.fetchPosts, 1000);
     // 페이지 새로 고침 후 모달 상태 복원
     const savedPost = localStorage.getItem('selectedPost');
     if (savedPost) {
@@ -105,6 +107,14 @@ export default {
     openPostDetail(post) {
       this.selectedPost = post;
       localStorage.setItem('selectedPost', JSON.stringify(post)); // 모달 상태 저장
+    },
+
+    // 모달 외부 클릭 시 모달 닫기
+    closeModalOutside(event) {
+      // 모달 외부 클릭이 되었을 때만 닫기
+      if (event.target === event.currentTarget) {
+        this.selectedPost = null; // 모달 닫기
+      }
     },
 
     // 모달 닫기
@@ -190,6 +200,8 @@ export default {
 
 
 <style scoped>
+
+
 /* Header Styles */
 header {
   background-color: white;
