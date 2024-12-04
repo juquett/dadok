@@ -82,8 +82,14 @@ export default {
   mounted() {
     this.checkAuthStatus(); // 로그인 상태 확인
     this.fetchPosts(); // 컴포넌트 로드 시 게시물 가져오기
+
+    // 페이지 새로 고침 후 모달 상태 복원
+    const savedPost = localStorage.getItem('selectedPost');
+    if (savedPost) {
+      this.selectedPost = JSON.parse(savedPost);
+    }
   },
-  
+
   methods: {
     // 게시물 목록 가져오기
     async fetchPosts() {
@@ -97,12 +103,14 @@ export default {
 
     // 게시물 클릭 시 상세 모달 표시
     openPostDetail(post) {
-      this.selectedPost = post; // 선택된 게시물을 모달에 전달
+      this.selectedPost = post;
+      localStorage.setItem('selectedPost', JSON.stringify(post)); // 모달 상태 저장
     },
 
     // 모달 닫기
     closeModal() {
-      this.selectedPost = null; // 모달 닫기
+      this.selectedPost = null;
+      localStorage.removeItem('selectedPost'); // 모달 상태 삭제
     },
 
     // 게시물 삭제 후 목록에서 해당 게시물 삭제

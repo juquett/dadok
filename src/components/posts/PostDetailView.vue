@@ -72,6 +72,59 @@
         @click="saveChanges"
         class="edit-btn"
       />
+
+      <!-- 좋아요 버튼 -->
+      <div class="like-container">
+        <img
+          :src="isLiked ? require('@/assets/HeartFilled.png') : require('@/assets/Heart.png')"
+          alt="좋아요"
+          class="like-icon"
+          @click="toggleLike"
+        />
+        <span>{{ likeCount }}</span>
+      </div>
+
+      <!-- 댓글 작성 -->
+      <div class="comments-section">
+        <h3>댓글</h3>
+
+        <!-- 댓글 입력 -->
+        <div class="comment-input">
+          <!-- 프로필 이미지와 닉네임 -->
+          <div class="profile-container">
+            <img
+              :src="selectedPost.profileImage || require('@/assets/ProfilePicture.png')"
+              alt="프로필 이미지"
+              class="comment-profile-image"
+            />
+            <span class="comment-nickname">{{ selectedPost.nickname || '홍길동' }}</span>
+          </div>
+          <textarea
+            v-model="newComment"
+            placeholder="댓글을 입력하세요"
+            class="textarea-comment"
+          ></textarea>
+          <button @click="submitComment">댓글 작성</button>
+        </div>
+
+        <!-- 댓글 목록 -->
+        <div v-if="comments.length > 0" class="comment-list">
+          <div v-for="comment in comments" :key="comment._id" class="comment-item">
+            <!-- 프로필 이미지와 닉네임 -->
+            <div class="comment-header">
+              <img
+                :src="comment.profileImage || require('@/assets/ProfilePicture.png')"
+                alt="프로필 이미지"
+                class="comment-profile-image"
+              />
+              <span class="comment-nickname">{{ comment.nickname || '홍길동' }}</span>
+            </div>
+            <p class="comment-text">{{ comment.text }}</p>
+            <p class="comment-time">{{ formatDate(comment.createdAt) }}</p>
+            <button class="delete-comment-btn" @click="deleteComment(comment._id)">삭제</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- 삭제 확인 모달 -->
@@ -85,98 +138,147 @@
   </div>
 </template>
 
-
-
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
   props: {
     post: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       isDeleteConfirmationVisible: false, // 삭제 확인 모달 표시 여부
       isEditing: false, // 수정 모드 상태
+      isLiked: false, // 좋아요 상태
+      likeCount: this.post.likes || 0, // 좋아요 개수
+      comments: [], // 댓글 목록
+      newComment: "", // 새 댓글 텍스트
     };
   },
   computed: {
     selectedPost() {
       return this.post || {};
-    }
+    },
+  },
+  mounted() {
+    this.fetchComments();
   },
   methods: {
+    async toggleLike() {
+      try {
+        this.isLiked = !this.isLiked;
+        this.likeCount += this.isLiked ? 1 : -1;
+
+        const response = await axios.post(`/api/posts/${this.selectedPost._id}/like`, {
+          liked: this.isLiked,
+        });
+        console.log(response.data.message); // 서버 응답 메시지 확인
+      } catch (error) {
+        console.error("좋아요 상태 업데이트 실패:", error);
+        alert("좋아요 상태를 업데이트하는 중 오류가 발생했습니다.");
+      }
+    },
     closeModal() {
       this.$emit("close");
     },
     showDeleteConfirmation() {
-      this.isDeleteConfirmationVisible = true; // 삭제 확인 모달 열기
+      this.isDeleteConfirmationVisible = true;
     },
     async confirmDelete() {
       try {
-        const postId = this.selectedPost._id; // 서버에서 사용하는 _id를 사용
+        const postId = this.selectedPost._id;
         const response = await axios.delete(`/api/posts/${postId}`);
-
-        alert(response.data.message); // 삭제 완료 메시지
-        this.$emit("delete", this.selectedPost); // 부모 컴포넌트에 삭제된 게시물 전달
+        alert(response.data.message);
+        this.$emit("delete", this.selectedPost);
         this.goToBoard();
-
-        this.isDeleteConfirmationVisible = false; // 삭제 확인 모달 닫기
-        this.closeModal(); // 모달 닫기
+        this.isDeleteConfirmationVisible = false;
+        this.closeModal();
       } catch (error) {
-        console.error('삭제 실패:', error);
-        alert('게시물 삭제에 실패했습니다.');
+        console.error("삭제 실패:", error);
+        alert("게시물 삭제에 실패했습니다.");
       }
     },
     cancelDelete() {
-      this.isDeleteConfirmationVisible = false; // 삭제 취소 시 모달 닫기
+      this.isDeleteConfirmationVisible = false;
     },
     startEditing() {
-      this.isEditing = true; // 수정 모드로 전환
+      this.isEditing = true;
     },
     async saveChanges() {
-    try {
-      const postId = this.selectedPost._id; // 게시물 ID
-      const updatedPost = {
-        title: this.selectedPost.title,
-        content: this.selectedPost.content,
-      };
-
-      // 서버로 PUT 요청 보내기
-      const response = await axios.put(`/api/posts/${postId}`, updatedPost);
-
-      if (response.status === 200) { // 성공적인 응답 확인
-        alert("게시물이 수정되었습니다."); // 성공 메시지
-        this.$emit("update", response.data); // 부모 컴포넌트에 수정된 데이터 전달
-        this.isEditing = false; // 수정 모드 종료
-      } else {
-        alert("게시물 수정에 실패했습니다."); // 오류 메시지
+      try {
+        const postId = this.selectedPost._id;
+        const updatedPost = {
+          title: this.selectedPost.title,
+          content: this.selectedPost.content,
+        };
+        const response = await axios.put(`/api/posts/${postId}`, updatedPost);
+        alert("게시물이 수정되었습니다.");
+        this.$emit("update", response.data);
+        this.isEditing = false;
+      } catch (error) {
+        console.error("게시물 수정 오류:", error);
+        alert("게시물 수정에 실패했습니다.");
       }
-    } catch (error) {
-      console.error("게시물 수정 오류:", error);
-      alert("게시물 수정에 실패했습니다."); // 예외 처리
-    }
-  },
+    },
+    async fetchComments() {
+  try {
+    const response = await axios.get(`/api/posts/${this.selectedPost._id}/comments`);
+    // 최신 댓글이 위로 오게 배열을 정렬
+    this.comments = response.data.comments.reverse();  
+  } catch (error) {
+    console.error("댓글 불러오기 실패:", error);
+    alert("댓글을 불러오는 중 오류가 발생했습니다.");
+  }
+},
+
+async submitComment() {
+  try {
+    const response = await axios.post(`/api/posts/${this.selectedPost._id}/comments`, {
+      comment: this.newComment,
+    });
+    // 댓글을 최신순으로 정렬하여 배열에 추가
+    this.comments = response.data.comments.reverse();  
+    this.newComment = ''; // 댓글 입력 초기화
+  } catch (error) {
+    console.error("댓글 작성 오류:", error);
+    alert("댓글 작성 중 오류가 발생했습니다.");
+  }
+},
+async deleteComment(commentId) {
+      try {
+        // 서버에서 댓글 삭제 요청
+        const response = await axios.delete(`/api/posts/${this.selectedPost._id}/comments/${commentId}`);
+        alert(response.data.message); // 삭제 성공 메시지
+        // 댓글 목록에서 해당 댓글을 삭제
+        this.comments = this.comments.filter(comment => comment._id !== commentId);
+      } catch (error) {
+        console.error("댓글 삭제 실패:", error);
+        alert("댓글 삭제에 실패했습니다.");
+      }
+    },
     formatDate(dateString) {
       const date = new Date(dateString);
-      return date.toLocaleString('ko-KR', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
+      return date.toLocaleString("ko-KR", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
       });
     },
     goToBoard() {
-      this.$router.push({ name: "PostListView" }); // 게시물 목록 페이지로 이동
+      this.$router.push({ name: "PostListView" });
     },
-  }
+  },
 };
-
 </script>
+
+
+
+
 
 <style scoped>
 /* 스타일 수정 */
@@ -195,13 +297,28 @@ export default {
 }
 
 .modal-content {
-  background: #fff;
-  padding: 30px;
+  width: 50%;
+  max-height: 80%;  /* 최대 높이 설정 */
+  background-color: white;
+  padding: 20px;
+  overflow-y: auto;  /* 세로 방향으로 스크롤 가능 */
   border-radius: 10px;
-  width: 90%;
-  max-width: 600px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   position: relative;
+}
+/* 스크롤바 숨기기 */
+.modal-content::-webkit-scrollbar {
+  width: 0;  /* 세로 스크롤바 */
+  height: 0;  /* 가로 스크롤바 */
+}
+
+/* 스크롤바 트랙도 숨김 */
+.modal-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 스크롤바의 Thumb (드래그 바)도 숨김 */
+.modal-content::-webkit-scrollbar-thumb {
+  background: transparent;
 }
 
 .close-btn {
@@ -395,5 +512,110 @@ export default {
   padding: 10px;
   border-radius: 5px;
   resize: none;
+}
+/* 좋아요 버튼 스타일 */
+.like-container {
+  position: absolute;
+  bottom: 10px;
+  left: 30px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.like-icon {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+/* 댓글 입력란 스타일 */
+.comment-input {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.comment-input .profile-container {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.comment-input .profile-image {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.comment-input .nickname {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.comment-input .textarea-comment {
+  width: 100%;
+  height: 60px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  resize: none;
+}
+
+.comment-input button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin-left: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.comment-input button:hover {
+  background-color: #45a049;
+}
+
+/* 댓글 목록 스타일 */
+.comment-item {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+
+.comment-header {
+  display: flex;
+  align-items: center;
+}
+
+.comment-profile-image {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.comment-nickname {
+  font-weight: bold;
+}
+
+.comment-text {
+  margin: 5px 0;
+}
+
+.comment-time {
+  font-size: 0.85em;
+  color: gray;
+  margin-top: 5px;
+}
+.delete-comment-btn {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px;
+  cursor: pointer;
+}
+.delete-comment-btn:hover {
+  background-color: darkred;
 }
 </style>
