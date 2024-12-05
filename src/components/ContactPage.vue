@@ -1,33 +1,40 @@
 <template>
     <div id="app">
       <header>
-        <!-- 상단 로그인, 회원가입 -->
-        <div class="top-header">
-          <div class="lefttop">책으로 나를 다독이는 공간</div>
-          <div class="auth">
+      <!-- 상단 로그인, 회원가입 -->
+      <div class="top-header">
+        <div class="lefttop">책으로 나를 다독이는 공간</div>
+        <div class="auth">
+          <div v-if="isAuthenticated">
+            <a href="#" class="logout" @click="logout">로그아웃</a>
+          </div>
+          <div v-else>
             <a href="#" class="login" @click="goToLogin">로그인</a>
+              
             <a href="#" class="signup" @click="goToJoin">회원가입</a>
           </div>
         </div>
-    
-        <!-- 하단 로고와 네비게이션 메뉴 -->
-        <div class="bottom-header">
-          <div class="logo">
-            <img src="@/assets/Group (1).png" alt="Logo" />
-            <h1 @click="goToMain" style="cursor: pointer;">DADOK</h1>
-          </div>
-          <nav>
-            <ul>
-              <li><a href="#" class="Board" @click="goToBoard">게시판</a></li>
-              <li><a href="#" class="monthbook" @click="goToMonthBook">이달의책</a></li>
-              <li><a href="#" class="helpdesk" @click="goToHelpDesk">고객센터</a></li>
-            </ul>
-          </nav>
-          <div class="profile">
-            <a href="#"><img @click="goToMyPage" src="@/assets/profileicon.png" alt="Profile" /></a>
-          </div>
+      </div>
+
+      <!-- 하단 로고와 네비게이션 메뉴 -->
+      <div class="bottom-header">
+        <div class="logo">
+          <!-- DADOK 클릭 시 MainPage로 이동 -->
+          <img src="@/assets/Group (1).png" alt="Logo" />
+          <h1 @click="goToMain" style="cursor: pointer;">DADOK</h1>
         </div>
-      </header>
+        <nav>
+          <ul>
+            <li><a href="#" class="Board" @click="goToBoard">게시판</a></li>
+            <li><a href="#" class="monthbook" @click="goToMonthBook">이달의책</a></li>
+            <li><a href="#" class="helpdesk" @click="goToHelpDesk">고객센터</a></li>
+          </ul>
+        </nav>
+        <div class="profile">
+          <a href="#"><img @click="goToMyPage" src="@/assets/profileicon.png" alt="Profile" /></a>
+        </div>
+      </div>
+    </header>
   
       <main>
         <div class="chat-wrapper">
@@ -86,8 +93,8 @@
           "게시판을 수정하고 싶어요": "게시판 작성 방법은 여기에 있습니다.",
           "도움이 필요해요": "어떤 도움이 필요하신지 말씀해주세요.",
           "프로필사진을 변경하고 싶어요": "데이터를 입력해주세요.",
-          "닉네임을 변경하고 싶어요": "데이터를 입력해주세요.",
-          "다독이다는 무슨 사이트야?": "데이터를 입력해주세요.",
+          "닉네임을 변경하고 싶어요": "마이페이지에서 닉네임 변경 버튼으로 변경할 수 있습니다.",
+          "다독이다는 무슨 사이트야?": "책에 대해 리뷰하고 토론하며 독서 경험을 공유할 수 있는 곳입니다!",
           "메인 페이지": "메인페이지로 이동하기",
         },
         availableKeywords: [
@@ -96,6 +103,11 @@
         ], // 자동완성 키워드
       };
     },
+    computed: {
+    isAuthenticated() {
+      return this.$store.state.isAuthenticated;
+    }
+  },
     methods: {
       sendMessage() {
         if (this.userInput.trim() === "") return;
@@ -272,7 +284,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px;
-
+  font-family: 'MyCustomFont';    
   background-color: #4a4a4a;
   color: white;
   border-radius: 0px; /* 헤더와 박스가 붙도록 radius 제거 */
@@ -285,6 +297,7 @@
 }
 
 .back-button {
+  font-family: 'MyCustomFont';
   background: none;
   border: none;
   color: white;
@@ -321,6 +334,7 @@
 }
 
 .message {
+  
   display: inline-block;
   padding: 10px 15px;
   border-radius: 20px;

@@ -10,7 +10,6 @@
           </div>
           <div v-else>
             <a href="#" class="login" @click="goToLogin">
-            <img src="@/assets/login_icon.png" alt="Login Icon" class="login-icon" />
               로그인
             </a>
             <a href="#" class="signup" @click="goToJoin">회원가입</a>
@@ -78,38 +77,39 @@
         </div>
   <div class="mypage-container">
     <!-- 기존의 프로필 섹션 코드 -->
-    
-    <!-- 게시판/ 좋아요 왔다갔다 하는 탭-->
+    <div>
+    <!-- 탭 버튼 -->
     <div class="tab-buttons">
-          <button :class="{ active: activeTab === 'recommendations' }" @click="selectTab('recommendations')">내 게시물</button>
-          <button :class="{ active: activeTab === 'like' }" @click="selectTab('like')">좋아요</button>
+      <button :class="{ active: activeTab === 'posts' }" @click="selectTab('posts')">내 게시물</button>
+      <button :class="{ active: activeTab === 'like' }" @click="selectTab('like')">좋아요</button>
+    </div>
 
-        </div>
+    <!-- 탭 콘텐츠 -->
+    <div v-if="activeTab === 'posts'">
+      <PostList :posts="posts" @post-selected="openPostDetail" />
+    </div>
+    <div v-if="activeTab === 'like'">
+      <p>좋아요한 게시물 탭 콘텐츠</p>
+    </div>
+
+    <!-- 게시물 상세 모달 -->
+    <div v-if="selectedPost" class="modal-container" @click="closeModalOutside">
+      <div class="modal-content" @click.stop>
+        <PostDetailModal 
+          :post="selectedPost" 
+          @close="closeModal" 
+          @post-deleted="handlePostDeleted" />
+      </div>
+    </div>
+  </div>
+    <!-- 게시판/ 좋아요 왔다갔다 하는 탭-->
+
 
     <!-- 선택된 탭에 따라 표시되는 콘텐츠 섹션 -->
     <div v-if="activeTab === 'like'" class="like-tab">
           <!-- '좋아요' 콘텐츠가 여기에 표시됩니다 -->
         </div>
-        <div v-if="activeTab === 'recommendations'" class="recommendations-tab">
-          <!-- 책 추천 콘텐츠 -->
-          <div class="scroll-animation">
-            <div class="book-item book1">
-              <img src="@/assets/book5.jpg" alt="book image" />
-              <div class="book-info">완전한 행복<br>정유정</div>
-            </div>
-            <div class="book-item book2">
-              <img src="@/assets/book7.jpg" alt="book image" />
-              <div class="book-info">채식주의자<br>한강</div>
-            </div>
-            <div class="book-item book3">
-              <img src="@/assets/book4.jpg" alt="book image" />
-              <div class="book-info">이중 하나는 거짓말<br>김애란</div>
-            </div>
-            <div class="book-item book4">
-              <img src="@/assets/book3.jpg" alt="book image" />
-              <div class="book-info">영원한 천국<br>정유정</div>
-            </div>
-          </div>
+        <div v-if="activeTab === 'posts'" class="posts-tab">
         </div>
       </div>
 
@@ -146,7 +146,11 @@
 </template>
 
 <script>
-export default {
+import axios from "axios";
+import PostList from "@/components/posts/PostListPage.vue"; // 게시물 목록 컴포넌트
+import PostDetailModal from "@/components/posts/PostDetailView.vue"; // 게시물 상세 모달
+
+export default {  
   data() {
     return {
       profileImage: require('@/assets/ProfilePicture.png'), // 기본 프로필 이미지
@@ -155,14 +159,18 @@ export default {
       isNicknameModalVisible: false, // 모달 표시 여부
       newNickname: "", // 새 닉네임 저장 변수
       isDeleteModalVisible: false, // 모달 창 표시 여부
-      activeTab: 'like' // 탭
+      activeTab: 'posts', // 탭
+      posts: [], // 게시물 데이터
+      selectedPost: null, // 선택된 게시물
     };
     
   },
   created() {
   this.loadProfileFromLocalStorage(); // LocalStorage에서 데이터 불러오기
 },
-
+  mounted() {
+      this.fetchPosts(); // 컴포넌트 로드 시 게시물 가져오기
+    },
 
   computed: {
     isAuthenticated() {
@@ -170,7 +178,42 @@ export default {
     }
   },
   methods: {
+        // 탭 전환
+        selectTab(tab) {
+      this.activeTab = tab;
+    },
 
+    // 게시물 데이터 가져오기
+    async fetchPosts() {
+      try {
+        const response = await axios.get("/api/posts");
+        this.posts = response.data;
+      } catch (error) {
+        console.error("게시물 데이터를 가져오는 데 실패했습니다.", error);
+      }
+    },
+
+    // 게시물 상세 보기
+    openPostDetail(post) {
+      this.selectedPost = post;
+    },
+
+    // 모달 외부 클릭 시 닫기
+    closeModalOutside(event) {
+      if (event.target === event.currentTarget) {
+        this.selectedPost = null;
+      }
+    },
+
+    // 모달 닫기
+    closeModal() {
+      this.selectedPost = null;
+    },
+
+    // 게시물 삭제 처리
+    handlePostDeleted(postId) {
+      this.posts = this.posts.filter(post => post._id !== postId);
+    },
     fetchUserData() {
       this.$axios.get('/mypage', {withCredentials: true})
         .then(response => {
@@ -187,10 +230,8 @@ export default {
     logout() {
     this.$store.commit('logout'); // Vuex 상태 갱신
     this.$router.push('/'); // 로그인 페이지로 리디렉션
-  },
-    selectTab(tab) {
-      this.activeTab = tab;
-    },
+   },
+  
     goToMain() {
       this.$router.push({ name: "MainPage" });
     },
@@ -272,10 +313,14 @@ export default {
     },
     cancelDelete() {
       this.isDeleteModalVisible = false;
-    }
-  }
-};
+    },
+  },
 
+components: {
+    PostList,
+    PostDetailModal,
+  },
+};
 </script>
 
 <style scoped>
@@ -395,13 +440,14 @@ nav ul li a {
 
 .tab-buttons button {
   font-family: 'MyCustomFont';
-  flex: 1;
+  flex-grow: 1; /* flex-grow를 사용하여 버튼이 화면을 균등하게 채우게 만듦 */
   padding: 15px;
   background-color: #f4c4b7;
   border: none;
   color: white;
   cursor: pointer;
   transition: background-color 0.3s;
+  text-align: center; /* 버튼 내 텍스트 가운데 정렬 */
 }
 
 /* 활성화된 버튼 색상 */
@@ -414,8 +460,9 @@ nav ul li a {
   background-color: #d3957d;
 }
 /* 탭 콘텐츠 섹션 */
-.like-tab, .recommendations-tab {
-  width: 100%;
+.like-tab, .posts-tab {
+  width: 100%; /* 100%로 수정하여 화면을 꽉 채우도록 */
+  padding: 10px;
 }
 .hidden-input {
   display: none; /* 파일 선택 버튼 숨기기 */

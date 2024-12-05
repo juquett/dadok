@@ -245,8 +245,12 @@ select {
   height: 300px;
   padding: 10px;
   border-radius: 5px;
+  font-family: 'MyCustomFont';
   border: 1px solid #ccc;
   resize: none;
   font-size: 14px;
+}
+#title {
+  font-family: 'MyCustomFont';
 }
 </style>

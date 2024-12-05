@@ -29,7 +29,7 @@
             class="profile-image"
           />
           <div class="nickname-and-time">
-            <span class="nickname">{{ selectedPost.nickname || '홍길동' }}</span>
+            <span class="nickname">{{ selectedPost.nickname || '부천대' }}</span>
             <span class="post-time">{{ formatDate(selectedPost.createdAt) }}</span>
           </div>
         </div>
@@ -101,11 +101,11 @@
             <!-- 댓글 상단 -->
             <div class="comment-header">
               <img
-                :src="comment.profileImage || require('@/assets/ProfilePicture.png')"
+                :src="comment.profileImage || require('@/assets/슈팅스타.png')"
                 alt="프로필 이미지"
                 class="comment-profile-image"
               />
-              <span class="comment-nickname">{{ comment.nickname || '홍길동' }}</span>
+              <span class="comment-nickname">{{ comment.nickname || '부천대' }}</span>
               <!-- 삭제 이미지 -->
               <img
                 src="@/assets/DeleteIcon.png"
@@ -538,6 +538,7 @@ async deleteComment(commentId) {
 
 
 .comment-input .textarea-comment {
+  font-family: 'MyCustomFont';
   margin-top: 10px;
   width: 100%;
   height: 18px;

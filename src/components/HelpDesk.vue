@@ -84,6 +84,11 @@
         selectedAnswer: "", // 선택한 질문의 답변을 저장
       };
     },
+    computed: {
+    isAuthenticated() {
+      return this.$store.state.isAuthenticated;
+    }
+  },
     methods: {
       openModal(question) {
         this.selectedQuestion = question;

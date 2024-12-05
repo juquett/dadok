@@ -3,34 +3,40 @@
 <template>
     <div id="app">
       <header>
-        <!-- 상단 로그인, 회원가입 -->
-        <div class="top-header">
-          <div class="lefttop">책으로 나를 다독이는 공간</div>
-          <div class="auth">
+      <!-- 상단 로그인, 회원가입 -->
+      <div class="top-header">
+        <div class="lefttop">책으로 나를 다독이는 공간</div>
+        <div class="auth">
+          <div v-if="isAuthenticated">
+            <a href="#" class="logout" @click="logout">로그아웃</a>
+          </div>
+          <div v-else>
             <a href="#" class="login" @click="goToLogin">로그인</a>
+              
             <a href="#" class="signup" @click="goToJoin">회원가입</a>
           </div>
         </div>
-  
-        <!-- 하단 로고와 네비게이션 메뉴 -->
-        <div class="bottom-header">
-          <div class="logo">
-            <!-- DADOK 클릭 시 MainPage로 이동 -->
-            <img src="@/assets/Group (1).png" alt="Logo" />
-            <h1 @click="goToMain" style="cursor: pointer;">DADOK</h1>
-          </div>
-          <nav>
-            <ul>
-              <li><a href="#" class="Board" @click="goToBoard">게시판</a></li>
-              <li><a href="#" class="monthbook" @click="goToMonthBook">이달의책</a></li>
-              <li><a href="#" class="helpdesk" @click="goToHelpDesk">고객센터</a></li>
-            </ul>
-          </nav>
-          <div class="profile">
-            <a href="#"><img @click="goToMyPage" src="@/assets/profileicon.png" alt="Profile" /></a>
-          </div>
+      </div>
+
+      <!-- 하단 로고와 네비게이션 메뉴 -->
+      <div class="bottom-header">
+        <div class="logo">
+          <!-- DADOK 클릭 시 MainPage로 이동 -->
+          <img src="@/assets/Group (1).png" alt="Logo" />
+          <h1 @click="goToMain" style="cursor: pointer;">DADOK</h1>
         </div>
-      </header>
+        <nav>
+          <ul>
+            <li><a href="#" class="Board" @click="goToBoard">게시판</a></li>
+            <li><a href="#" class="monthbook" @click="goToMonthBook">이달의책</a></li>
+            <li><a href="#" class="helpdesk" @click="goToHelpDesk">고객센터</a></li>
+          </ul>
+        </nav>
+        <div class="profile">
+          <a href="#"><img @click="goToMyPage" src="@/assets/profileicon.png" alt="Profile" /></a>
+        </div>
+      </div>
+    </header>
   
       <main>
         <div class="pink-box">
@@ -83,6 +89,11 @@
         selectedDate: "2024-04"
       };
     },
+    computed: {
+    isAuthenticated() {
+      return this.$store.state.isAuthenticated;
+    }
+  },
     methods: {
       changePage() {
         // 선택된 날짜에 따라 페이지를 변경
@@ -274,6 +285,7 @@
     font-size: 16px;
     padding: 10px;
     border-radius: 10px;
+    font-family: 'MyCustomFont';
   }
   
   /* 이미지와 텍스트를 위한 스타일 */

@@ -76,7 +76,7 @@ export default {
   data() {
     return {
       posts: [], // 게시물 데이터를 저장할 배열
-      isAuthenticated: false, // 로그인 상태
+      
       selectedPost: null, // 선택된 게시물 정보
     };
   },
@@ -90,8 +90,13 @@ export default {
     if (savedPost) {
       this.selectedPost = JSON.parse(savedPost);
     }
+    
   },
-
+  computed: {
+    isAuthenticated() {
+      return this.$store.state.isAuthenticated;
+    }
+  },
   methods: {
     // 게시물 목록 가져오기
     async fetchPosts() {
@@ -123,6 +128,7 @@ export default {
       localStorage.removeItem('selectedPost'); // 모달 상태 삭제
     },
 
+
     // 게시물 삭제 후 목록에서 해당 게시물 삭제
     handlePostDeleted(postId) {
       this.posts = this.posts.filter(post => post._id !== postId);
@@ -135,11 +141,9 @@ export default {
     
     // 로그아웃 처리
     logout() {
-      localStorage.removeItem("token"); // 로컬 스토리지에서 JWT 삭제
-      this.$store.commit("logout"); // Vuex 상태 갱신
-      this.isAuthenticated = false; // 로그인 상태 변경
-      this.$router.push("/"); // 메인 페이지로 리디렉션
-    },
+    this.$store.commit('logout'); // Vuex 상태 갱신
+    this.$router.push('/'); // 로그인 페이지로 리디렉션
+  },
 
     // 다른 페이지로 이동
     goToMain() {

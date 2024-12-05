@@ -86,6 +86,11 @@ export default {
       selectedDate: "2024-10"
     };
   },
+  computed: {
+    isAuthenticated() {
+      return this.$store.state.isAuthenticated;
+    }
+  },
   methods: {
     changePage() {
       // 선택된 날짜에 따라 페이지를 변경
@@ -150,189 +155,192 @@ export default {
 </script>
 
 <style scoped>
-/* Global Styles */
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #f5f5f5;
-}
-
-/* Header Styles */
-header {
-  background-color: white;
-  border-bottom: 1px solid #eaeaea;
-}
-
-/* 상단 로그인/회원가입 섹션 */
-.top-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0% 30px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #eaeaea;
-}
-
-/* 책으로 나를 다독이는 공간 */
-.lefttop {
-  font-size: 12px;
-  color: #a1a1a1;
-  margin-left: 65px;
-}
-
-.auth a {
-  margin-left: 30px;
-  text-decoration: none;
-  color: black;
-  font-size: 14px;
-}
-
-.auth .signup {
-  margin-right: 60px;
-  background-color: #f4c4b7;
-  padding: 5px 15px;
-  border-radius: 5px;
-  color: white;
-}
-.auth .logout {
+  /* Global Styles */
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+  }
+  
+  /* Header Styles */
+  header {
+    background-color: white;
+    border-bottom: 1px solid #eaeaea;
+  }
+  
+  /* 상단 로그인/회원가입 섹션 */
+  .top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0% 30px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eaeaea;
+  }
+  
+  /* 책으로 나를 다독이는 공간 */
+  .lefttop {
+    font-size: 12px;
+    color: #a1a1a1;
+    margin-left: 65px;
+  }
+  
+  .auth a {
+    margin-left: 30px;
+    text-decoration: none;
+    color: black;
+    font-size: 14px;
+  }
+  
+  .auth .signup {
     margin-right: 60px;
     background-color: #f4c4b7;
     padding: 5px 15px;
     border-radius: 5px;
     color: white;
   }
-
-/* 하단 로고와 네비게이션 섹션 */
-.bottom-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0px 80px;
-  color: #f4c4b7;
-  height: 70px;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  margin-right: -70px;
-}
-
-.logo img {
-  height: 25px;
-  margin-right: 7px;
-}
-
-nav ul {
-  display: flex;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-nav ul li {
-  margin: 0 50px;
-}
-
-nav ul li a {
-  text-decoration: none;
-  color: black;
-  font-size: 14px;
-}
-
-.profile {
-  margin-right: 25px;
-}
-
-.profile img {
-  height: 35px;
-  border-radius: 50%;
-}
-
-/* Main Styles */
-.pink-box {
-  margin-top: 0;
-  position: relative;
-  width: 100%;
-  height: 350px;
-  background: linear-gradient(120deg, #ffdda6, #ffb042, #ffd0a6);
-  background-size: 300% 300%; /* 배경을 크게 설정하여 애니메이션 효과 가능 */
-  animation: moveBackground 5s linear infinite; /* 애니메이션 추가 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 60px;
-  color: white;
-  font-weight: bold;
-}
-
-/* 배경 움직임 애니메이션 정의 */
-@keyframes moveBackground {
-  0% {
-    background-position: 0% 50%;
+  .auth .logout {
+      margin-right: 60px;
+      background-color: #f4c4b7;
+      padding: 5px 15px;
+      border-radius: 5px;
+      color: white;
+    }
+  
+  /* 하단 로고와 네비게이션 섹션 */
+  .bottom-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 80px;
+    color: #f4c4b7;
+    height: 70px;
   }
-  50% {
-    background-position: 100% 50%;
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    margin-right: -70px;
   }
-  100% {
-    background-position: 0% 50%;
+  
+  .logo img {
+    height: 25px;
+    margin-right: 7px;
   }
-}
-
-.date-select {
-  position: absolute;
-  top: 10px;
-  right: 50px;
-}
-
-select {
-  font-size: 16px;
-  padding: 10px;
-  border-radius: 10px;
-}
-
-/* 이미지와 텍스트를 위한 스타일 */
-.book-section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 150px;
-  background-color: white;
-}
-
-.book-image {
-  width: 200px;
-  height: 100%;
-  margin-right: 60px;
-  box-shadow: 0px 8px 9px rgba(0, 0, 0, 0.2); /* 그림자 추가 */
-  border-radius: 20px;
-}
-
-.book-info {
-  max-width: 600px;
-}
-
-.book-info h2 {
-  font-size: 48px;
-  margin-top: 0px;
-  margin-bottom: 10px;
-}
-.author-name {
-  font-size: 20px;
-  margin-left: 10px;
-  color: #555;
-}
-
-.book-info p {
-  margin-bottom: 5px;
-  color: #555;
-}
-.gray-box {
-  background-color: #f0f0f0;
-  padding: 30px;
-  border-radius: 20px;
-  color: #555;
-  margin-top: 50px;
-  font-size: 14px;
-}
-</style>
+  
+  nav ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  nav ul li {
+    margin: 0 50px;
+  }
+  
+  nav ul li a {
+    text-decoration: none;
+    color: black;
+    font-size: 14px;
+  }
+  
+  .profile {
+    margin-right: 25px;
+  }
+  
+  .profile img {
+    height: 35px;
+    border-radius: 50%;
+  }
+  
+  /* Main Styles */
+  .pink-box {
+    margin-top: 0;
+    position: relative;
+    width: 100%;
+    height: 350px;
+    background: linear-gradient(120deg, #ffd188, #b7d8ff, #ffd188);
+    background-size: 300% 300%; /* 배경을 크게 설정하여 애니메이션 효과 가능 */
+    animation: moveBackground 5s linear infinite; /* 애니메이션 추가 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 60px;
+    color: white;
+    font-weight: bold;
+  }
+  
+  /* 배경 움직임 애니메이션 정의 */
+  @keyframes moveBackground {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  
+  .date-select {
+    
+    position: absolute;
+    top: 10px;
+    right: 50px;
+  }
+  
+  select {
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 10px;
+    font-family: 'MyCustomFont';
+  }
+  
+  /* 이미지와 텍스트를 위한 스타일 */
+  .book-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 150px;
+    background-color: white;
+  }
+  
+  .book-image {
+    width: 200px;
+    height: 100%;
+    margin-right: 60px;
+    box-shadow: 0px 8px 9px rgba(0, 0, 0, 0.2); /* 그림자 추가 */
+    border-radius: 20px;
+  }
+  
+  .book-info {
+    max-width: 600px;
+  }
+  
+  .book-info h2 {
+    font-size: 48px;
+    margin-top: 0px;
+    margin-bottom: 10px;
+  }
+  .author-name {
+    font-size: 20px;
+    margin-left: 10px;
+    color: #555;
+  }
+  
+  .book-info p {
+    margin-bottom: 5px;
+    color: #555;
+  }
+  .gray-box {
+    background-color: #f0f0f0;
+    padding: 30px;
+    border-radius: 20px;
+    color: #555;
+    margin-top: 50px;
+    font-size: 14px;
+  }
+  </style>
+  

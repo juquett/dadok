@@ -86,6 +86,11 @@
         selectedDate: "2024-11"
       };
     },
+    computed: {
+    isAuthenticated() {
+      return this.$store.state.isAuthenticated;
+    }
+  },
     methods: {
       changePage() {
         // 선택된 날짜에 따라 페이지를 변경
@@ -289,6 +294,7 @@
     font-size: 16px;
     padding: 10px;
     border-radius: 10px;
+    font-family: 'MyCustomFont';
   }
   
   /* 이미지와 텍스트를 위한 스타일 */

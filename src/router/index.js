@@ -23,9 +23,14 @@ import TestPage from '@/components/TestPage.vue'; //테스트 페이지
 import HelpDesk from '@/components/HelpDesk.vue'; //고객센터
 import Contact from '@/components/ContactPage.vue'; //고객센터
 import FloatingWidget from '@/components/FloatingWidget.vue';
-
+import PostListPage from "@/components/posts/PostListPage.vue"; // 게시물 목록만 렌더링할 페이지
 
 const routes = [
+  {
+    path: "/posts",
+    name: "PostListPage", // 새로운 경로
+    component: PostListPage,
+  },
   {
     path: '/FloatingWidget',
     name: 'FloatingWidget',
@@ -65,7 +70,7 @@ const routes = [
     path: '/myPage',
     name: 'myPage',
     component: myPage, // 마이페이지
-    // meta: { requiresAuth: true } //로그인 권한
+    //meta: { requiresAuth: true } //로그인 권한
   },
   {
     path: '/post',
